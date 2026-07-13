@@ -13,9 +13,9 @@ const en = locale === "en";
   <div class="hero-copy">
     <p class="status"><span>Alpha</span> v{site.version}</p>
     <h1>Lumière</h1>
-    <p class="tagline">{en ? "A programming language that thinks in French." : "Un langage de programmation qui pense en français."}</p>
-    <p class="lede">{en ? "Lumière combines French vocabulary with familiar programming concepts to make code direct, readable, and expressive." : "Lumière associe un vocabulaire français à des concepts de programmation familiers pour rendre le code direct, lisible et expressif."}</p>
-    <div class="actions"><a class="button primary" href={`${base}/download/`}>{t.hero.primary}</a><a class="button" href={`${base}/learn/`}>{en ? "Read the documentation" : "Lire la documentation"}</a></div>
+    <p class="tagline">{en ? "A French-first programming language." : "Un langage de programmation pensé en français."}</p>
+    <p class="lede">{en ? "Lumière brings familiar programming ideas into a French syntax, with a small native toolchain you can install, run, and study today." : "Lumière transpose des idées de programmation familières dans une syntaxe française, avec un outil natif que vous pouvez installer, exécuter et étudier dès maintenant."}</p>
+    <div class="actions"><a class="button primary" href={`${base}/download/`}>{t.hero.primary}</a><a class="button" href={`${base}/learn/`}>{en ? "Start learning" : "Commencer"}</a></div>
   </div>
   <div class="example" aria-label={en ? "Lumière code example" : "Exemple de code Lumière"}>
     <div class="file"><span>bonjour.lum</span><span>01–07</span></div>
@@ -30,13 +30,13 @@ saluer("monde")</code></pre>
 </section>
 
 <section class="summary section wrap">
-  <div><p class="eyebrow">{en ? "Available today" : "Disponible aujourd’hui"}</p><h2>{en ? "A working language, still taking shape." : "Un langage fonctionnel, encore en évolution."}</h2></div>
+  <div><p class="eyebrow">{en ? "Available today" : "Disponible aujourd’hui"}</p><h2>{en ? "An alpha you can actually run." : "Une alpha que vous pouvez vraiment exécuter."}</h2></div>
   <div class="facts">
     <div><strong>FR</strong><span>{en ? "French syntax" : "syntaxe française"}</span></div>
     <div><strong>04</strong><span>{en ? "native platforms" : "plateformes natives"}</span></div>
     <div><strong>0.1.6</strong><span>{en ? "current alpha" : "alpha actuelle"}</span></div>
   </div>
-  <p class="summary-copy">{en ? "Lumière is usable today for small programs, experiments, and language exploration. It is still alpha software, so syntax and APIs may change between releases." : "Lumière est déjà utilisable pour de petits programmes, des expériences et l’exploration du langage. Le projet reste en alpha : la syntaxe et les API peuvent évoluer entre les versions."}</p>
+  <p class="summary-copy">{en ? "Use Lumière for small programs, examples, and language exploration. The project is still alpha, so expect some syntax and API changes as the language settles." : "Utilisez Lumière pour de petits programmes, des exemples et l’exploration du langage. Le projet reste en alpha : certaines parties de la syntaxe et des API peuvent encore évoluer."}</p>
 </section>
 
 <section class="install section wrap">
@@ -49,12 +49,12 @@ saluer("monde")</code></pre>
 </section>
 
 <section class="architecture section wrap">
-  <div class="section-heading"><p class="eyebrow">Architecture</p><h2>{en ? "Understand the project." : "Comprendre le projet."}</h2><p>{en ? "Read the design notes behind the language, from source files and runtime behavior to the boundaries of the standard library." : "Lisez les notes de conception du langage, des fichiers source au comportement à l’exécution, jusqu’aux frontières de la bibliothèque standard."}</p><a href={`${base}/architecture/`}>{en ? "Read the architecture notes" : "Lire les notes d’architecture"} →</a></div>
+  <div class="section-heading"><p class="eyebrow">Architecture</p><h2>{en ? "Understand how Lumière is organized." : "Comprendre l’organisation de Lumière."}</h2><p>{en ? "Read the design notes behind the language: how programs are represented, how code runs, and where the standard library begins." : "Lisez les notes de conception du langage : représentation des programmes, exécution du code et frontières de la bibliothèque standard."}</p><a href={`${base}/architecture/`}>{en ? "Read the architecture notes" : "Lire les notes d’architecture"} →</a></div>
   <ol class="pipeline"><li><span>01</span><strong>{en ? "Write" : "Écrire"}</strong></li><li><span>02</span><strong>{en ? "Run" : "Exécuter"}</strong></li><li><span>03</span><strong>{en ? "Test" : "Tester"}</strong></li><li><span>04</span><strong>{en ? "Package" : "Distribuer"}</strong></li><li><span>05</span><strong>{en ? "Extend" : "Étendre"}</strong></li></ol>
 </section>
 
 <section class="journal section wrap">
-  <div><p class="eyebrow">{en ? "Engineering journal" : "Journal d’ingénierie"}</p><h2>{en ? "Notes from building the language." : "Notes sur la construction du langage."}</h2></div>
+  <div><p class="eyebrow">{en ? "Engineering journal" : "Journal d’ingénierie"}</p><h2>{en ? "The reasoning behind the language." : "Le raisonnement derrière le langage."}</h2></div>
   <a href={`${base}/journal/`}><span>{en ? "Coming first" : "Premier article"}</span><strong>{en ? "Building a French-first programming language" : "Construire un langage de programmation pensé en français"}</strong><small>{en ? "Language design · Releases" : "Conception · Versions"}</small><i>→</i></a>
 </section>
 
@@ -86,15 +86,15 @@ saluer("monde")</code></pre>
   .file { border-bottom: 1px solid #30434d; }.result { justify-content: flex-start; gap: 3rem; border-top: 1px solid #30434d; }.result code { color: var(--ink); text-transform: none; }
   pre { margin: 0; padding: clamp(1.5rem, 4vw, 3.5rem); overflow-x: auto; color: #d8dee1; font: clamp(.78rem, 1.2vw, .9rem)/2 var(--font-mono); } pre i { color: #ef8a73; font-style: normal; }
   .section { width: auto; margin-inline: calc(50% - 50vw); padding: clamp(5.5rem, 10vw, 8rem) max(var(--gutter), calc((100vw - var(--page)) / 2)); border-top: 1px solid var(--line); }
-  .summary { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem 7rem; color: var(--light-ink); background: var(--light); border-color: #738083; }
-  .summary h2 { color: var(--light-ink); }.summary .eyebrow, .summary .facts span { color: #424d51; }.summary .summary-copy { color: var(--light-muted); }.summary .facts div { border-color: #707d7f; }
+  .summary { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem 7rem; background: #171d20; border-color: #30383c; }
+  .summary h2 { color: var(--ink); }.summary .eyebrow, .summary .facts span { color: var(--faint); }.summary .summary-copy { color: var(--muted); }.summary .facts div { border-color: #30383c; }
   .facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; align-self: end; }.facts div { display: flex; flex-direction: column; border-left: 1px solid var(--line); padding-left: 1rem; }.facts strong { font: 1.4rem var(--font-mono); }.facts span { color: var(--faint); font-size: .7rem; }
   .summary-copy { grid-column: 2; max-width: 38rem; margin: 0; }
   .install, .architecture { display: grid; grid-template-columns: .75fr 1.25fr; gap: clamp(4rem, 10vw, 9rem); }.section-heading { max-width: 32rem; }.section-heading a { display: inline-block; margin-top: 1rem; color: inherit; font-size: .78rem; text-decoration: none; }
-  .install { color: var(--light-ink); background: var(--light-soft); border-color: #928b81; }.install h2 { color: var(--light-ink); }.install .eyebrow { color: #575a59; }.install .section-heading > p:not(.eyebrow) { color: var(--light-muted); }
-  .command { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 2rem; padding: 1rem; border: 1px solid #898378; background: #bbb4a8; font: .68rem var(--font-mono); }.command code { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }.command button { color: #364e78; background: none; border: 0; cursor: pointer; font: inherit; }
-  .platforms { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid #888278; }.platforms a { display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid #888278; text-decoration: none; }.platforms a:nth-child(odd) { padding-right: 1.5rem; }.platforms a:nth-child(even) { padding-left: 1.5rem; border-left: 1px solid #888278; }.platforms strong { font-size: .85rem; }.platforms small { display: block; color: var(--light-muted); font-size: .68rem; }.platforms a > span:last-child { color: var(--light-muted); font: .65rem var(--font-mono); }
-  .source { display: flex; justify-content: space-between; margin-top: 1.4rem; color: var(--light-muted); font-size: .75rem; text-decoration: none; }
+  .install { background: #14191c; border-color: #30383c; }.install h2 { color: var(--ink); }.install .eyebrow { color: var(--faint); }.install .section-heading > p:not(.eyebrow) { color: var(--muted); }
+  .command { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 2rem; padding: 1rem; border: 1px solid #30383c; background: #171d20; font: .68rem var(--font-mono); }.command code { overflow: hidden; color: #d8dee1; text-overflow: ellipsis; white-space: nowrap; }.command button { color: #df846f; background: none; border: 0; cursor: pointer; font: inherit; }
+  .platforms { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid #30383c; }.platforms a { display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid #30383c; text-decoration: none; }.platforms a:nth-child(odd) { padding-right: 1.5rem; }.platforms a:nth-child(even) { padding-left: 1.5rem; border-left: 1px solid #30383c; }.platforms strong { font-size: .85rem; }.platforms small { display: block; color: var(--muted); font-size: .68rem; }.platforms a > span:last-child { color: var(--muted); font: .65rem var(--font-mono); }
+  .source { display: flex; justify-content: space-between; margin-top: 1.4rem; color: var(--muted); font-size: .75rem; text-decoration: none; }
   .architecture { background: var(--prussian-deep); border-color: #293c47; }
   .pipeline { list-style: none; margin: 1rem 0 0; padding: 0; border-top: 1px solid var(--line); }.pipeline li { display: grid; grid-template-columns: 3rem 1fr; padding: 1.1rem 0; border-bottom: 1px solid var(--line); }.pipeline span { color: var(--faint); font: .62rem var(--font-mono); }.pipeline strong { font-size: .9rem; font-weight: 500; }
   .journal { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; background: #202427; }.journal a { position: relative; display: flex; flex-direction: column; justify-content: center; padding: 1.5rem 3rem 1.5rem 0; border-top: 1px solid #3a3f43; border-bottom: 1px solid #3a3f43; text-decoration: none; transition: padding-left .18s; }.journal a:hover { padding-left: .75rem; }.journal a span, .journal a small { color: var(--faint); font-size: .67rem; }.journal a strong { margin: .5rem 0; font-weight: 500; }.journal a i { position: absolute; right: .5rem; font-style: normal; }
