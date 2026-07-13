@@ -32,9 +32,9 @@ saluer("monde")</code></pre>
           </div>
         </div>
         <div class="index">
-          <a href="#syntaxe"><span>01</span><strong>Syntaxe et valeurs</strong><p>Noms, littéraux, expressions, déclarations et vocabulaire français utilisé par Lumière.</p></a>
-          <a href="#programmes"><span>02</span><strong>Programmes et modules</strong><p>Fonctions, fermetures, imports, erreurs, collections et organisation des fichiers source.</p></a>
-          <a href="#outils"><span>03</span><strong>Outils et workflow</strong><p>Exécuter des fichiers, utiliser le shell, lancer les tests et relier les exemples à la version alpha actuelle.</p></a>
+          <a href="#syntaxe"><span>01</span><strong>Syntaxe et valeurs</strong><p>Noms, littéraux, expressions, variables et vocabulaire français qui compose les programmes Lumière.</p></a>
+          <a href="#programmes"><span>02</span><strong>Programmes et modules</strong><p>Fonctions, imports, erreurs, collections et structure de base d’un programme Lumière en plusieurs fichiers.</p></a>
+          <a href="#outils"><span>03</span><strong>Outils et workflow</strong><p>Exécuter un fichier, ouvrir le shell, vérifier un programme et lancer les suites LumiTest en ligne de commande.</p></a>
         </div>
       </>
     )}
@@ -47,19 +47,19 @@ saluer("monde")</code></pre>
             <p class="lede">{page.body}</p>
           </div>
           <div class="panel code-panel">
-            <div class="panel-head"><span>version {site.version}</span><span>carte du projet</span></div>
+            <div class="panel-head"><span>version {site.version}</span><span>carte d’architecture</span></div>
             <pre><code>langage
-  syntaxe
-  programmes
-  runtime
-  paquets
+  fichiers source
+  modèle programme
+  exécution
+  bibliothèque standard
   outils</code></pre>
           </div>
         </div>
         <div class="index">
-          <a href="#langage"><span>01</span><strong>Structure du langage</strong><p>Organisation des fichiers Lumière, forme de la syntaxe et fonctionnalités présentes dans l’alpha actuelle.</p></a>
-          <a href="#executer"><span>02</span><strong>Exécuter des programmes</strong><p>Comment un programme Lumière passe du code source à un comportement observable et testable.</p></a>
-          <a href="#frontieres"><span>03</span><strong>Frontières du projet</strong><p>Où la bibliothèque standard, les fonctionnalités natives, les paquets et les outils rencontrent le langage.</p></a>
+          <a href="#langage"><span>01</span><strong>Structure du langage</strong><p>Organisation des fichiers source, déclarations, modules et erreurs dans l’alpha actuelle.</p></a>
+          <a href="#executer"><span>02</span><strong>Exécuter des programmes</strong><p>Comment Lumière transforme un fichier source en comportement que l’on peut lancer, vérifier et tester.</p></a>
+          <a href="#frontieres"><span>03</span><strong>Frontières</strong><p>Ce qui relève du langage, de la bibliothèque standard et des outils en ligne de commande.</p></a>
         </div>
       </>
     )}
@@ -72,7 +72,7 @@ saluer("monde")</code></pre>
             <p class="lede">{page.body}</p>
           </div>
           <div class="panel code-panel">
-            <div class="panel-head"><span>périmètre éditorial</span><span>notes d’auteur</span></div>
+            <div class="panel-head"><span>périmètre éditorial</span><span>notes du projet</span></div>
             <pre><code>conception du langage
 notes de version
 choix de syntaxe
@@ -81,9 +81,9 @@ workflow développeur</code></pre>
           </div>
         </div>
         <div class="journal-list">
-          <a href="#"><span>À venir</span><strong>Construire un langage de programmation pensé en français</strong><small>Conception du langage · Notes alpha</small><i>Brouillon</i></a>
-          <a href="#"><span>Prévu</span><strong>Concevoir une syntaxe française sans masquer les concepts familiers</strong><small>Conception du langage · Syntaxe</small><i>Brouillon</i></a>
-          <a href="#"><span>Prévu</span><strong>Ce qui appartient à la bibliothèque standard pendant l’alpha</strong><small>Bibliothèque standard · Versions</small><i>Brouillon</i></a>
+          <a href="#"><span>Premier essai</span><strong>Construire un langage de programmation pensé en français</strong><small>Conception du langage · Notes alpha</small><i>Prévu</i></a>
+          <a href="#"><span>Ensuite</span><strong>Concevoir une syntaxe française sans masquer les concepts familiers</strong><small>Conception du langage · Syntaxe</small><i>Prévu</i></a>
+          <a href="#"><span>Ensuite</span><strong>Ce qui appartient à la bibliothèque standard pendant l’alpha</strong><small>Bibliothèque standard · Versions</small><i>Prévu</i></a>
         </div>
       </>
     )}
