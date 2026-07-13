@@ -1,0 +1,30 @@
+---
+import Brand from "./Brand.astro";
+import { alternatePath, getCopy } from "../lib/i18n";
+import { type Locale } from "../data/site";
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const t = getCopy(locale);
+const base = `/${locale}`;
+---
+<header>
+  <a class="home" href={`${base}/`}><Brand /></a>
+  <nav aria-label="Primary navigation">
+    <a href={`${base}/learn/`}>{t.nav.learn}</a>
+    <a href={`${base}/architecture/`}>{t.nav.architecture}</a>
+    <a href={`${base}/journal/`}>{t.nav.journal}</a>
+    <a href={`${base}/download/`}>{t.nav.download}</a>
+    <a class="locale" href={alternatePath(Astro.url.pathname, locale)} hreflang={locale === "en" ? "fr" : "en"}>{locale === "en" ? "FR" : "EN"}</a>
+  </nav>
+</header>
+
+<style>
+  header { position: relative; z-index: 10; display: flex; align-items: center; justify-content: space-between; width: min(100% - 2 * var(--gutter), var(--page)); height: var(--header); margin: auto; border-bottom: 1px solid var(--line); }
+  a { color: inherit; text-decoration: none; }
+  nav { display: flex; align-items: center; gap: clamp(1.1rem, 2.5vw, 2.2rem); color: var(--muted); font-size: .78rem; }
+  nav a { transition: color .15s; }
+  nav a:hover { color: var(--ink); }
+  .locale { padding-left: 1.2rem; border-left: 1px solid var(--line); font: .67rem var(--font-mono); }
+  @media (max-width: 680px) { nav a:not(.locale):not([href$="download/"]) { display: none; } }
+</style>

@@ -1,0 +1,122 @@
+---
+import InteriorPage from "../../components/InteriorPage.astro";
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import { pages, type Section } from "../../data/pages";
+import { artifacts } from "../../data/releases";
+import { site } from "../../data/site";
+
+export function getStaticPaths() {
+  return (["learn", "architecture", "journal", "download"] as const).map((section) => ({ params: { section }, props: { section } }));
+}
+
+const { section } = Astro.props as { section: Section };
+const page = pages.en[section];
+---
+<SiteLayout locale="en" title={`${page.eyebrow} — Lumière`} description={page.intro}>
+  <InteriorPage locale="en" section={section} {...page}>
+    {section === "learn" && (
+      <>
+        <div class="lead">
+          <div>
+            <h2>{page.heading}</h2>
+            <p class="lede">{page.body}</p>
+          </div>
+          <div class="panel code-panel">
+            <div class="panel-head"><span>bonjour.lum</span><span>first program</span></div>
+            <pre><code><i>fonction</i> saluer(nom: Texte) &#123;
+  <i>soit</i> message = "Bonjour, " + nom
+  affiche(message)
+&#125;
+
+saluer("monde")</code></pre>
+          </div>
+        </div>
+        <div class="index">
+          <a href="#syntax"><span>01</span><strong>Syntax and values</strong><p>Names, literals, expressions, bindings, and the French vocabulary used by Lumière.</p></a>
+          <a href="#programs"><span>02</span><strong>Programs and modules</strong><p>Functions, closures, imports, errors, collections, and how source files are organized.</p></a>
+          <a href="#tools"><span>03</span><strong>Tools and workflow</strong><p>Run files, use the shell, execute tests, and keep examples tied to the current alpha release.</p></a>
+        </div>
+      </>
+    )}
+
+    {section === "architecture" && (
+      <>
+        <div class="lead">
+          <div>
+            <h2>{page.heading}</h2>
+            <p class="lede">{page.body}</p>
+          </div>
+          <div class="panel code-panel">
+            <div class="panel-head"><span>release {site.version}</span><span>project map</span></div>
+            <pre><code>language
+  syntax
+  programs
+  runtime
+  packages
+  tools</code></pre>
+          </div>
+        </div>
+        <div class="index">
+          <a href="#language"><span>01</span><strong>Language structure</strong><p>How Lumière source files are organized, how syntax is shaped, and what the current alpha supports.</p></a>
+          <a href="#running-programs"><span>02</span><strong>Running programs</strong><p>How a Lumière program moves from source code to behavior users can observe and test.</p></a>
+          <a href="#project-boundaries"><span>03</span><strong>Project boundaries</strong><p>Where the standard library, native features, packages, and developer tools meet the language.</p></a>
+        </div>
+      </>
+    )}
+
+    {section === "journal" && (
+      <>
+        <div class="lead">
+          <div>
+            <h2>{page.heading}</h2>
+            <p class="lede">{page.body}</p>
+          </div>
+          <div class="panel code-panel">
+            <div class="panel-head"><span>editorial scope</span><span>author notes</span></div>
+            <pre><code>language design
+release notes
+syntax decisions
+standard library
+developer workflow</code></pre>
+          </div>
+        </div>
+        <div class="journal-list">
+          <a href="#"><span>Coming first</span><strong>Building a French-first programming language</strong><small>Language design · Alpha notes</small><i>Draft</i></a>
+          <a href="#"><span>Planned</span><strong>Designing French syntax without hiding familiar concepts</strong><small>Language design · Syntax</small><i>Draft</i></a>
+          <a href="#"><span>Planned</span><strong>What belongs in the standard library during alpha</strong><small>Standard library · Releases</small><i>Draft</i></a>
+        </div>
+      </>
+    )}
+
+    {section === "download" && (
+      <>
+        <div class="lead">
+          <div>
+            <h2>{page.heading}</h2>
+            <p class="lede">{page.body}</p>
+          </div>
+          <div class="panel code-panel">
+            <div class="panel-head"><span>build from source</span><span>build, test, install</span></div>
+            <pre><code>git clone {site.repository}
+cd lumiere
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
+cmake --build build --parallel 2
+ctest --test-dir build --output-on-failure
+sudo cmake --install build
+lumiere --version</code></pre>
+          </div>
+        </div>
+        <div class="release-table">
+          {artifacts.map((artifact) => (
+            <a href={artifact.href}>
+              <span>{artifact.format}</span>
+              <strong>{artifact.label}</strong>
+              <small>{artifact.detail}</small>
+              <i>Download</i>
+            </a>
+          ))}
+        </div>
+      </>
+    )}
+  </InteriorPage>
+</SiteLayout>

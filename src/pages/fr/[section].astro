@@ -1,0 +1,122 @@
+---
+import InteriorPage from "../../components/InteriorPage.astro";
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import { pages, type Section } from "../../data/pages";
+import { artifacts } from "../../data/releases";
+import { site } from "../../data/site";
+
+export function getStaticPaths() {
+  return (["learn", "architecture", "journal", "download"] as const).map((section) => ({ params: { section }, props: { section } }));
+}
+
+const { section } = Astro.props as { section: Section };
+const page = pages.fr[section];
+---
+<SiteLayout locale="fr" title={`${page.eyebrow} — Lumière`} description={page.intro}>
+  <InteriorPage locale="fr" section={section} {...page}>
+    {section === "learn" && (
+      <>
+        <div class="lead">
+          <div>
+            <h2>{page.heading}</h2>
+            <p class="lede">{page.body}</p>
+          </div>
+          <div class="panel code-panel">
+            <div class="panel-head"><span>bonjour.lum</span><span>premier programme</span></div>
+            <pre><code><i>fonction</i> saluer(nom: Texte) &#123;
+  <i>soit</i> message = "Bonjour, " + nom
+  affiche(message)
+&#125;
+
+saluer("monde")</code></pre>
+          </div>
+        </div>
+        <div class="index">
+          <a href="#syntaxe"><span>01</span><strong>Syntaxe et valeurs</strong><p>Noms, littéraux, expressions, déclarations et vocabulaire français utilisé par Lumière.</p></a>
+          <a href="#programmes"><span>02</span><strong>Programmes et modules</strong><p>Fonctions, fermetures, imports, erreurs, collections et organisation des fichiers source.</p></a>
+          <a href="#outils"><span>03</span><strong>Outils et workflow</strong><p>Exécuter des fichiers, utiliser le shell, lancer les tests et relier les exemples à la version alpha actuelle.</p></a>
+        </div>
+      </>
+    )}
+
+    {section === "architecture" && (
+      <>
+        <div class="lead">
+          <div>
+            <h2>{page.heading}</h2>
+            <p class="lede">{page.body}</p>
+          </div>
+          <div class="panel code-panel">
+            <div class="panel-head"><span>version {site.version}</span><span>carte du projet</span></div>
+            <pre><code>langage
+  syntaxe
+  programmes
+  runtime
+  paquets
+  outils</code></pre>
+          </div>
+        </div>
+        <div class="index">
+          <a href="#langage"><span>01</span><strong>Structure du langage</strong><p>Organisation des fichiers Lumière, forme de la syntaxe et fonctionnalités présentes dans l’alpha actuelle.</p></a>
+          <a href="#executer"><span>02</span><strong>Exécuter des programmes</strong><p>Comment un programme Lumière passe du code source à un comportement observable et testable.</p></a>
+          <a href="#frontieres"><span>03</span><strong>Frontières du projet</strong><p>Où la bibliothèque standard, les fonctionnalités natives, les paquets et les outils rencontrent le langage.</p></a>
+        </div>
+      </>
+    )}
+
+    {section === "journal" && (
+      <>
+        <div class="lead">
+          <div>
+            <h2>{page.heading}</h2>
+            <p class="lede">{page.body}</p>
+          </div>
+          <div class="panel code-panel">
+            <div class="panel-head"><span>périmètre éditorial</span><span>notes d’auteur</span></div>
+            <pre><code>conception du langage
+notes de version
+choix de syntaxe
+bibliothèque standard
+workflow développeur</code></pre>
+          </div>
+        </div>
+        <div class="journal-list">
+          <a href="#"><span>À venir</span><strong>Construire un langage de programmation pensé en français</strong><small>Conception du langage · Notes alpha</small><i>Brouillon</i></a>
+          <a href="#"><span>Prévu</span><strong>Concevoir une syntaxe française sans masquer les concepts familiers</strong><small>Conception du langage · Syntaxe</small><i>Brouillon</i></a>
+          <a href="#"><span>Prévu</span><strong>Ce qui appartient à la bibliothèque standard pendant l’alpha</strong><small>Bibliothèque standard · Versions</small><i>Brouillon</i></a>
+        </div>
+      </>
+    )}
+
+    {section === "download" && (
+      <>
+        <div class="lead">
+          <div>
+            <h2>{page.heading}</h2>
+            <p class="lede">{page.body}</p>
+          </div>
+          <div class="panel code-panel">
+            <div class="panel-head"><span>compiler les sources</span><span>compiler, tester, installer</span></div>
+            <pre><code>git clone {site.repository}
+cd lumiere
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
+cmake --build build --parallel 2
+ctest --test-dir build --output-on-failure
+sudo cmake --install build
+lumiere --version</code></pre>
+          </div>
+        </div>
+        <div class="release-table">
+          {artifacts.map((artifact) => (
+            <a href={artifact.href}>
+              <span>{artifact.format}</span>
+              <strong>{artifact.label}</strong>
+              <small>{artifact.detail}</small>
+              <i>Télécharger</i>
+            </a>
+          ))}
+        </div>
+      </>
+    )}
+  </InteriorPage>
+</SiteLayout>
