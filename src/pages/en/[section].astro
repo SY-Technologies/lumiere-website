@@ -23,19 +23,25 @@ const page = pages.en[section];
           </div>
           <div class="panel code-panel">
             <div class="panel-head"><span>bonjour.lum</span><span>first program</span></div>
-            <pre><code><i>fonction</i> saluer(nom: Texte) &#123;
-  <i>soit</i> message = "Bonjour, " + nom
-  affiche(message)
-&#125;
-
-saluer("monde")</code></pre>
+            <pre><code><i>fonction</i> principal() &#123;
+  afficher("Bonjour, monde!")
+&#125;</code></pre>
           </div>
         </div>
         <div class="index">
-          <a href="#syntax"><span>01</span><strong>Syntax and values</strong><p>Names, literals, expressions, variables, and the French words that make up Lumière programs.</p></a>
-          <a href="#programs"><span>02</span><strong>Programs and modules</strong><p>Functions, imports, errors, collections, and the basic structure of a multi-file Lumière program.</p></a>
-          <a href="#tools"><span>03</span><strong>Tools and workflow</strong><p>Run a file, open the shell, check a program, and execute LumiTest suites from the command line.</p></a>
+          <a href="#syntax"><span>01</span><strong>Language surface</strong><p>Functions, variables, typed annotations, literals, named arguments, control flow, exceptions, and <code>agir selon</code>.</p></a>
+          <a href="#programs"><span>02</span><strong>Programs and modules</strong><p>File-backed modules, dotted imports, aliases with <code>comme</code>, selective imports, public exports, and built-in modules.</p></a>
+          <a href="#tools"><span>03</span><strong>Tools and workflow</strong><p>Run a program on the VM, compare with the tree-walker, open the persistent shell, inspect IR/bytecode, and run LumiTest.</p></a>
         </div>
+        <section class="detail-block" aria-label="Learning topics">
+          <h3>Core language topics</h3>
+          <div class="detail-grid">
+            <div><span>Syntax</span><p>Variables with <code>soit</code>, typed function parameters, optional return types, lists, dictionaries, text values, and named arguments.</p></div>
+            <div><span>Control flow</span><p><code>si</code>, <code>tant que</code>, <code>pour chaque</code>, <code>essayer</code>/<code>attraper</code>/<code>finalement</code>, and <code>agir selon</code> with literal and typed binding branches.</p></div>
+            <div><span>Programs</span><p>A runnable file uses <code>fonction principal()</code>. Multi-file programs can import public members from other <code>.lum</code> files.</p></div>
+            <div><span>Objects</span><p>The current alpha supports classes, inheritance, interfaces, <code>ici</code>, <code>parent</code>, and runtime checks for required interface methods.</p></div>
+          </div>
+        </section>
       </>
     )}
 
@@ -48,19 +54,28 @@ saluer("monde")</code></pre>
           </div>
           <div class="panel code-panel">
             <div class="panel-head"><span>release {site.version}</span><span>architecture map</span></div>
-            <pre><code>language
-  source files
-  program model
-  execution
-  standard library
-  tooling</code></pre>
+            <pre><code>lumiere programme.lum
+lumiere --vm programme.lum
+lumiere --tw programme.lum
+lumiere ir programme.lum
+lumiere bytecode programme.lum
+lumiere tester tests</code></pre>
           </div>
         </div>
         <div class="index">
-          <a href="#language"><span>01</span><strong>Language structure</strong><p>How source files, declarations, modules, and errors are organized in the current alpha.</p></a>
-          <a href="#running-programs"><span>02</span><strong>Running programs</strong><p>How Lumière turns a source file into behavior you can run, check, and test.</p></a>
-          <a href="#project-boundaries"><span>03</span><strong>Boundaries</strong><p>Which responsibilities belong to the language, the standard library, and the command-line tools.</p></a>
+          <a href="#language"><span>01</span><strong>Parser and language model</strong><p>The documented surface covers declarations, typed values, modules, objects, collections, control flow, and runtime diagnostics.</p></a>
+          <a href="#running-programs"><span>02</span><strong>Execution backends</strong><p>The bytecode VM is the production default. The tree-walker remains available for the shell, diagnostics, and backend comparison.</p></a>
+          <a href="#project-boundaries"><span>03</span><strong>Standard library and tools</strong><p>Built-in modules include Maths, Fichier, Chemin, Texte, Temps, and Aléatoire; tooling includes inspection commands and LumiTest.</p></a>
         </div>
+        <section class="detail-block" aria-label="Architecture details">
+          <h3>Current implementation boundaries</h3>
+          <div class="detail-grid">
+            <div><span>Execution</span><p>Running <code>lumiere programme.lum</code> uses the bytecode VM by default. <code>--vm</code> and <code>--tw</code> make backend selection explicit.</p></div>
+            <div><span>Shell</span><p>Running <code>lumiere</code> with no arguments starts a persistent tree-walker shell that keeps declarations between submissions.</p></div>
+            <div><span>Inspection</span><p><code>lumiere ir</code> prints the linked intermediate representation. <code>lumiere bytecode</code> prints decoded bytecode without executing it.</p></div>
+            <div><span>Limits</span><p>Some checks remain runtime-driven in the alpha. Pattern exhaustiveness and full interface signature conformance are not complete yet.</p></div>
+          </div>
+        </section>
       </>
     )}
 
@@ -72,18 +87,20 @@ saluer("monde")</code></pre>
             <p class="lede">{page.body}</p>
           </div>
           <div class="panel code-panel">
-            <div class="panel-head"><span>editorial scope</span><span>project notes</span></div>
-            <pre><code>language design
-release notes
-syntax decisions
-standard library
-developer workflow</code></pre>
+            <div class="panel-head"><span>journal</span><span>project notes</span></div>
+            <pre><code>current release
+language behavior
+command line
+source builds
+runtime checks</code></pre>
           </div>
         </div>
         <div class="journal-list">
-          <a href="#"><span>First essay</span><strong>Building a French-first programming language</strong><small>Language design · Alpha notes</small><i>Queued</i></a>
-          <a href="#"><span>Next</span><strong>Designing French syntax without hiding familiar concepts</strong><small>Language design · Syntax</small><i>Queued</i></a>
-          <a href="#"><span>Next</span><strong>What belongs in the standard library during alpha</strong><small>Standard library · Releases</small><i>Queued</i></a>
+          <div class="empty-state">
+            <span>No published articles yet</span>
+            <strong>The journal will appear here once the first article is written.</strong>
+            <p>Until then, use the Learn, Architecture, and Download pages for the current public documentation.</p>
+          </div>
         </div>
       </>
     )}
@@ -115,7 +132,22 @@ lumiere --version</code></pre>
               <i>Download</i>
             </a>
           ))}
+          <a href={site.repository}>
+            <span>source</span>
+            <strong>Build with CMake</strong>
+            <small>Use this path when no release artifact matches your CPU or operating system.</small>
+            <i>GitHub</i>
+          </a>
         </div>
+        <section class="detail-block" aria-label="Installation notes">
+          <h3>Pick the right path</h3>
+          <div class="detail-grid">
+            <div><span>macOS</span><p>Use the Apple Silicon package on <code>arm64</code> Macs and the Intel package on <code>x86_64</code> Macs.</p></div>
+            <div><span>Linux</span><p>The published Debian package is for x86-64 systems. ARM systems, including Raspberry Pi, should build from source.</p></div>
+            <div><span>Windows</span><p>The MSI targets x86-64 Windows. The PowerShell installer is per-user and prints the installation directory.</p></div>
+            <div><span>Source</span><p>Source builds require Git, CMake 3.23 or newer, and a C++20 compiler. Use a single build job on low-memory machines.</p></div>
+          </div>
+        </section>
       </>
     )}
   </InteriorPage>

@@ -23,19 +23,25 @@ const page = pages.fr[section];
           </div>
           <div class="panel code-panel">
             <div class="panel-head"><span>bonjour.lum</span><span>premier programme</span></div>
-            <pre><code><i>fonction</i> saluer(nom: Texte) &#123;
-  <i>soit</i> message = "Bonjour, " + nom
-  affiche(message)
-&#125;
-
-saluer("monde")</code></pre>
+            <pre><code><i>fonction</i> principal() &#123;
+  afficher("Bonjour, monde!")
+&#125;</code></pre>
           </div>
         </div>
         <div class="index">
-          <a href="#syntaxe"><span>01</span><strong>Syntaxe et valeurs</strong><p>Noms, littéraux, expressions, variables et vocabulaire français qui compose les programmes Lumière.</p></a>
-          <a href="#programmes"><span>02</span><strong>Programmes et modules</strong><p>Fonctions, imports, erreurs, collections et structure de base d’un programme Lumière en plusieurs fichiers.</p></a>
-          <a href="#outils"><span>03</span><strong>Outils et workflow</strong><p>Exécuter un fichier, ouvrir le shell, vérifier un programme et lancer les suites LumiTest en ligne de commande.</p></a>
+          <a href="#syntaxe"><span>01</span><strong>Surface du langage</strong><p>Fonctions, variables, annotations de type, littéraux, arguments nommés, contrôle de flux, exceptions et <code>agir selon</code>.</p></a>
+          <a href="#programmes"><span>02</span><strong>Programmes et modules</strong><p>Modules en fichiers, imports pointés, alias avec <code>comme</code>, imports sélectifs, exports publics et modules intégrés.</p></a>
+          <a href="#outils"><span>03</span><strong>Outils et workflow</strong><p>Exécuter sur la VM, comparer avec le tree-walker, ouvrir le shell persistant, inspecter IR/bytecode et lancer LumiTest.</p></a>
         </div>
+        <section class="detail-block" aria-label="Sujets d’apprentissage">
+          <h3>Sujets clés du langage</h3>
+          <div class="detail-grid">
+            <div><span>Syntaxe</span><p>Variables avec <code>soit</code>, paramètres de fonction typés, types de retour optionnels, listes, dictionnaires, textes et arguments nommés.</p></div>
+            <div><span>Contrôle de flux</span><p><code>si</code>, <code>tant que</code>, <code>pour chaque</code>, <code>essayer</code>/<code>attraper</code>/<code>finalement</code> et <code>agir selon</code> avec branches littérales ou typées.</p></div>
+            <div><span>Programmes</span><p>Un fichier exécutable utilise <code>fonction principal()</code>. Les programmes multi-fichiers peuvent importer des membres publics depuis d’autres fichiers <code>.lum</code>.</p></div>
+            <div><span>Objets</span><p>L’alpha actuelle prend en charge classes, héritage, interfaces, <code>ici</code>, <code>parent</code> et vérification runtime des méthodes requises par les interfaces.</p></div>
+          </div>
+        </section>
       </>
     )}
 
@@ -48,19 +54,28 @@ saluer("monde")</code></pre>
           </div>
           <div class="panel code-panel">
             <div class="panel-head"><span>version {site.version}</span><span>carte d’architecture</span></div>
-            <pre><code>langage
-  fichiers source
-  modèle programme
-  exécution
-  bibliothèque standard
-  outils</code></pre>
+            <pre><code>lumiere programme.lum
+lumiere --vm programme.lum
+lumiere --tw programme.lum
+lumiere ir programme.lum
+lumiere bytecode programme.lum
+lumiere tester tests</code></pre>
           </div>
         </div>
         <div class="index">
-          <a href="#langage"><span>01</span><strong>Structure du langage</strong><p>Organisation des fichiers source, déclarations, modules et erreurs dans l’alpha actuelle.</p></a>
-          <a href="#executer"><span>02</span><strong>Exécuter des programmes</strong><p>Comment Lumière transforme un fichier source en comportement que l’on peut lancer, vérifier et tester.</p></a>
-          <a href="#frontieres"><span>03</span><strong>Frontières</strong><p>Ce qui relève du langage, de la bibliothèque standard et des outils en ligne de commande.</p></a>
+          <a href="#langage"><span>01</span><strong>Parseur et modèle du langage</strong><p>La surface documentée couvre déclarations, valeurs typées, modules, objets, collections, contrôle de flux et diagnostics.</p></a>
+          <a href="#executer"><span>02</span><strong>Backends d’exécution</strong><p>La VM bytecode est le backend par défaut. Le tree-walker reste disponible pour le shell, les diagnostics et la comparaison.</p></a>
+          <a href="#frontieres"><span>03</span><strong>Bibliothèque standard et outils</strong><p>Les modules intégrés incluent Maths, Fichier, Chemin, Texte, Temps et Aléatoire ; les outils incluent l’inspection et LumiTest.</p></a>
         </div>
+        <section class="detail-block" aria-label="Détails d’architecture">
+          <h3>Frontières de l’implémentation actuelle</h3>
+          <div class="detail-grid">
+            <div><span>Exécution</span><p><code>lumiere programme.lum</code> utilise la VM bytecode par défaut. <code>--vm</code> et <code>--tw</code> rendent le choix explicite.</p></div>
+            <div><span>Shell</span><p><code>lumiere</code> sans argument lance un shell tree-walk persistant qui conserve les déclarations entre les soumissions.</p></div>
+            <div><span>Inspection</span><p><code>lumiere ir</code> affiche la représentation intermédiaire liée. <code>lumiere bytecode</code> affiche le bytecode décodé sans l’exécuter.</p></div>
+            <div><span>Limites</span><p>Certaines vérifications restent faites à l’exécution dans l’alpha. L’exhaustivité des motifs et la conformité complète des signatures d’interface ne sont pas terminées.</p></div>
+          </div>
+        </section>
       </>
     )}
 
@@ -72,18 +87,20 @@ saluer("monde")</code></pre>
             <p class="lede">{page.body}</p>
           </div>
           <div class="panel code-panel">
-            <div class="panel-head"><span>périmètre éditorial</span><span>notes du projet</span></div>
-            <pre><code>conception du langage
-notes de version
-choix de syntaxe
-bibliothèque standard
-workflow développeur</code></pre>
+            <div class="panel-head"><span>journal</span><span>notes du projet</span></div>
+            <pre><code>version actuelle
+comportement du langage
+ligne de commande
+compilation des sources
+vérifications runtime</code></pre>
           </div>
         </div>
         <div class="journal-list">
-          <a href="#"><span>Premier essai</span><strong>Construire un langage de programmation pensé en français</strong><small>Conception du langage · Notes alpha</small><i>Prévu</i></a>
-          <a href="#"><span>Ensuite</span><strong>Concevoir une syntaxe française sans masquer les concepts familiers</strong><small>Conception du langage · Syntaxe</small><i>Prévu</i></a>
-          <a href="#"><span>Ensuite</span><strong>Ce qui appartient à la bibliothèque standard pendant l’alpha</strong><small>Bibliothèque standard · Versions</small><i>Prévu</i></a>
+          <div class="empty-state">
+            <span>Aucun article publié pour le moment</span>
+            <strong>Le journal apparaîtra ici lorsque le premier article sera écrit.</strong>
+            <p>D’ici là, utilisez les pages Apprendre, Architecture et Télécharger pour la documentation publique actuelle.</p>
+          </div>
         </div>
       </>
     )}
@@ -115,7 +132,22 @@ lumiere --version</code></pre>
               <i>Télécharger</i>
             </a>
           ))}
+          <a href={site.repository}>
+            <span>source</span>
+            <strong>Compiler avec CMake</strong>
+            <small>Utilisez cette voie quand aucun artefact ne correspond à votre processeur ou système.</small>
+            <i>GitHub</i>
+          </a>
         </div>
+        <section class="detail-block" aria-label="Notes d’installation">
+          <h3>Choisir la bonne voie</h3>
+          <div class="detail-grid">
+            <div><span>macOS</span><p>Utilisez le paquet Apple Silicon sur les Mac <code>arm64</code> et le paquet Intel sur les Mac <code>x86_64</code>.</p></div>
+            <div><span>Linux</span><p>Le paquet Debian publié cible les systèmes x86-64. Les systèmes ARM, dont Raspberry Pi, doivent compiler les sources.</p></div>
+            <div><span>Windows</span><p>Le MSI cible Windows x86-64. L’installateur PowerShell est par utilisateur et affiche le dossier d’installation.</p></div>
+            <div><span>Sources</span><p>La compilation nécessite Git, CMake 3.23 ou plus récent et un compilateur C++20. Utilisez un seul job sur les machines avec peu de mémoire.</p></div>
+          </div>
+        </section>
       </>
     )}
   </InteriorPage>
