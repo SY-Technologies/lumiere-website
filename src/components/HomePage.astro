@@ -49,7 +49,7 @@ const installCommand = "curl -fsSL https://raw.githubusercontent.com/SY-Technolo
 </section>
 
 <section class="architecture section wrap">
-  <div class="section-heading"><p class="eyebrow">Architecture</p><h2>{en ? "Understand how Lumière fits together." : "Comprendre comment Lumière s’organise."}</h2><p set:html={en ? "See how source files, modules, the command line, <code>LumiTest</code>, and the standard library connect in the current alpha." : "Voyez comment les fichiers source, les modules, la ligne de commande, <code>LumiTest</code> et la bibliothèque standard s’articulent dans l’alpha actuelle."} /><a href={`${base}/architecture/`}>{en ? "Read the architecture notes" : "Lire les notes d’architecture"} →</a></div>
+  <div class="section-heading"><p class="eyebrow">Architecture</p><h2>{en ? "Read how Lumière is implemented." : "Lire comment Lumière est implémenté."}</h2><p set:html={en ? "French source support, diagnostics, tree-walk execution, VM lowering, runtime values, and standard-library module design." : "Support du source français, diagnostics, exécution tree-walk, lowering VM, valeurs runtime et conception des modules standard."} /><a href={`${base}/architecture/`}>{en ? "Read the architecture reference" : "Lire la référence d’architecture"} →</a></div>
   <ol class="pipeline"><li><span>01</span><strong>{en ? "Write source" : "Écrire du source"}</strong></li><li><span>02</span><strong>{en ? "Run files" : "Lancer les fichiers"}</strong></li><li><span>03</span><strong>{en ? "Use modules" : "Utiliser les modules"}</strong></li><li><span>04</span><strong>{en ? "Run LumiTest" : "Lancer LumiTest"}</strong></li><li><span>05</span><strong>{en ? "Read errors" : "Lire les erreurs"}</strong></li></ol>
 </section>
 
