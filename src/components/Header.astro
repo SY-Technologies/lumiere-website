@@ -51,7 +51,7 @@ const base = `/${locale}`;
 </script>
 
 <style>
-  header { position: relative; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 1rem; width: min(100% - 2 * var(--gutter), var(--page)); height: var(--header); margin: auto; border-bottom: 1px solid var(--line); }
+  header { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 1rem; width: min(100% - 2 * var(--gutter), var(--page)); height: var(--header); margin: auto; border-bottom: 1px solid var(--line); background: rgba(23, 26, 28, .92); backdrop-filter: blur(18px); }
   a, button { color: inherit; }
   a { text-decoration: none; }
   button { font: inherit; }
@@ -60,7 +60,7 @@ const base = `/${locale}`;
   nav a { transition: color .15s; }
   nav a:hover { color: var(--ink); }
   .locale { padding-left: 1.2rem; border-left: 1px solid var(--line); font: .67rem var(--font-mono); }
-  .menu-button { display: none; align-items: center; gap: .7rem; min-height: 2.75rem; padding: 0; border: 0; background: transparent; color: var(--muted); cursor: pointer; font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; }
+  .menu-button { display: none; align-items: center; gap: .7rem; min-height: 2.9rem; padding: 0 0 0 .75rem; border: 0; background: transparent; color: var(--muted); cursor: pointer; font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; }
   .menu-button i, .menu-button i::before, .menu-button i::after { display: block; width: 1.3rem; height: 1px; background: currentColor; transition: transform .18s, opacity .18s; }
   .menu-button i { position: relative; }
   .menu-button i::before, .menu-button i::after { position: absolute; content: ""; left: 0; }
@@ -80,6 +80,8 @@ const base = `/${locale}`;
       gap: 0;
       min-width: 0;
       padding: .55rem 0;
+      max-height: calc(100svh - var(--header) - 1.5rem);
+      overflow-y: auto;
       border: 1px solid #30383c;
       background: #171d20;
       box-shadow: 0 1.5rem 3rem rgba(0, 0, 0, .26);
@@ -93,5 +95,9 @@ const base = `/${locale}`;
     nav a { display: flex; align-items: center; min-height: 3.1rem; padding: 0 1rem; border-bottom: 1px solid #30383c; color: var(--ink); font-size: .9rem; }
     nav a:last-child { border-bottom: 0; }
     .locale { padding-left: 1rem; border-left: 0; color: var(--muted); font-size: .75rem; }
+  }
+  @media (max-width: 420px) {
+    header { width: calc(100% - 2rem); }
+    .menu-button span { font-size: .66rem; }
   }
 </style>

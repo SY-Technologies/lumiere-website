@@ -166,11 +166,6 @@ const alphaLabel = locale === "fr" ? "Alpha publique" : "Public alpha";
     font: .82rem/1.9 var(--font-mono);
   }
 
-  .content :global(code i) {
-    color: #df846f;
-    font-style: normal;
-  }
-
   .content :global(.index) {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -221,6 +216,7 @@ const alphaLabel = locale === "fr" ? "Alpha publique" : "Public alpha";
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     gap: .4rem 2rem;
+    min-height: 4rem;
     padding: 1.25rem 0;
     border-bottom: 1px solid #30383c;
     text-decoration: none;
@@ -339,17 +335,18 @@ const alphaLabel = locale === "fr" ? "Alpha publique" : "Public alpha";
 
   @media (max-width: 520px) {
     .interior {
-      padding-top: 1.25rem;
+      padding-top: 1rem;
       padding-bottom: 4rem;
     }
 
     .shell {
       gap: 2rem;
-      padding-top: 2.25rem;
+      padding-top: 1.75rem;
     }
 
     h1 {
-      font-size: clamp(2.75rem, 15vw, 3.3rem);
+      font-size: clamp(2.45rem, 13vw, 3.15rem);
+      letter-spacing: -.05em;
     }
 
     .masthead > p:last-child {
@@ -361,9 +358,15 @@ const alphaLabel = locale === "fr" ? "Alpha publique" : "Public alpha";
       font-size: 2rem;
     }
 
+    .release a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2.75rem;
+    }
+
     .content {
-      margin-top: 2.25rem;
-      padding-top: 2.25rem;
+      margin-top: 2rem;
+      padding-top: 2rem;
     }
 
     .content :global(.lead) {
@@ -383,8 +386,13 @@ const alphaLabel = locale === "fr" ? "Alpha publique" : "Public alpha";
     }
 
     .content :global(.index > *) {
+      display: block;
       min-height: auto;
       padding: 1rem;
+    }
+
+    .content :global(.index p) {
+      font-size: .82rem;
     }
 
     .content :global(.detail-grid > div) {
@@ -395,6 +403,8 @@ const alphaLabel = locale === "fr" ? "Alpha publique" : "Public alpha";
     .content :global(.release-table a),
     .content :global(.journal-list a) {
       grid-template-columns: 1fr;
+      gap: .5rem;
+      padding: 1rem 0;
     }
 
     .content :global(.release-table i),

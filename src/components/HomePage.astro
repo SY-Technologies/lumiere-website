@@ -1,6 +1,7 @@
 ---
 import { artifacts } from "../data/releases";
 import { getCopy } from "../lib/i18n";
+import { highlightCode } from "../lib/highlight";
 import { site, type Locale } from "../data/site";
 
 interface Props { locale: Locale }
@@ -8,20 +9,22 @@ const { locale } = Astro.props;
 const t = getCopy(locale);
 const base = `/${locale}`;
 const en = locale === "en";
+const helloCode = `fonction principal() {
+  afficher("Bonjour, monde!")
+}`;
+const installCommand = "curl -fsSL https://raw.githubusercontent.com/SY-Technologies/lumiere/main/scripts/install.sh | sh";
 ---
 <section class="hero wrap">
   <div class="hero-copy">
     <p class="status"><span>Alpha</span> v{site.version}</p>
     <h1>Lumière</h1>
     <p class="tagline">{en ? "A French-first programming language." : "Un langage de programmation pensé en français."}</p>
-    <p class="lede">{en ? "Lumière runs .lum programs written with French syntax, with a command line for execution, inspection, testing, and an interactive shell." : "Lumière exécute des programmes .lum écrits avec une syntaxe française, avec une ligne de commande pour exécuter, inspecter, tester et ouvrir un shell interactif."}</p>
+    <p class="lede" set:html={en ? "Lumière runs <code>.lum</code> programs written with French syntax, with a command line for running files, testing code, and opening an interactive shell." : "Lumière exécute des programmes <code>.lum</code> écrits avec une syntaxe française, avec une ligne de commande pour lancer des fichiers, tester du code et ouvrir un shell interactif."} />
     <div class="actions"><a class="button primary" href={`${base}/download/`}>{t.hero.primary}</a><a class="button" href={`${base}/learn/`}>{en ? "Start learning" : "Commencer"}</a></div>
   </div>
   <div class="example" aria-label={en ? "Lumière code example" : "Exemple de code Lumière"}>
     <div class="file"><span>bonjour.lum</span><span>01–07</span></div>
-    <pre><code><i>fonction</i> principal() &#123;
-  afficher("Bonjour, monde!")
-&#125;</code></pre>
+    <pre><code set:html={highlightCode(helloCode)} /></pre>
     <div class="result"><span>sortie</span><code>Bonjour, monde!</code></div>
   </div>
 </section>
@@ -29,25 +32,25 @@ const en = locale === "en";
 <section class="summary section wrap">
   <div><p class="eyebrow">{en ? "Available today" : "Disponible aujourd’hui"}</p><h2>{en ? "An alpha you can actually run." : "Une alpha que vous pouvez vraiment exécuter."}</h2></div>
   <div class="facts">
-    <div><strong>VM</strong><span>{en ? "default backend" : "backend par défaut"}</span></div>
+    <div><strong>.lum</strong><span>{en ? "source files" : "fichiers source"}</span></div>
     <div><strong>04</strong><span>{en ? "release artifacts" : "artefacts de version"}</span></div>
     <div><strong>CLI</strong><span>{en ? "run, test, inspect" : "exécuter, tester, inspecter"}</span></div>
   </div>
-  <p class="summary-copy">{en ? "The current alpha includes functions, typed declarations, modules, classes, interfaces, collections, control flow, and runtime diagnostics. Libraries, tooling, and some APIs may still change between releases." : "L’alpha actuelle inclut fonctions, déclarations typées, modules, classes, interfaces, collections, contrôle de flux et diagnostics d’exécution. Les bibliothèques, les outils et certaines API peuvent encore évoluer entre les versions."}</p>
+  <p class="summary-copy">{en ? "The current alpha includes functions, typed declarations, modules, classes, interfaces, collections, control flow, tests, and practical error messages. Libraries, tooling, and some APIs may still change between releases." : "L’alpha actuelle inclut fonctions, déclarations typées, modules, classes, interfaces, collections, contrôle de flux, tests et messages d’erreur pratiques. Les bibliothèques, les outils et certaines API peuvent encore évoluer entre les versions."}</p>
 </section>
 
 <section class="install section wrap">
   <div class="section-heading"><p class="eyebrow">{t.release.eyebrow}</p><h2>{en ? "Install Lumière." : "Installer Lumière."}</h2><p>{t.release.body}</p></div>
   <div class="install-options">
-    <div class="command"><code>curl -fsSL https://raw.githubusercontent.com/SY-Technologies/lumiere/main/scripts/install.sh | sh</code><button aria-label="Copy installation command" data-copy>{en ? "Copy" : "Copier"}</button></div>
+    <div class="command"><code set:html={highlightCode(installCommand)} /><button aria-label="Copy installation command" data-copy>{en ? "Copy" : "Copier"}</button></div>
     <div class="platforms">{artifacts.map((artifact) => <a href={artifact.href}><span><strong>{artifact.label}</strong><small>{artifact.detail}</small></span><span>{artifact.format} ↓</span></a>)}</div>
     <a class="source" href={`${site.repository}#build`}>{en ? "Build from source with CMake and C++20" : "Compiler les sources avec CMake et C++20"} <span>↗</span></a>
   </div>
 </section>
 
 <section class="architecture section wrap">
-  <div class="section-heading"><p class="eyebrow">Architecture</p><h2>{en ? "Understand the current implementation." : "Comprendre l’implémentation actuelle."}</h2><p>{en ? "Follow the documented path from source files to the VM, the tree-walker, built-in modules, and LumiTest." : "Suivez le parcours documenté des fichiers source vers la VM, l’interpréteur tree-walk, les modules intégrés et LumiTest."}</p><a href={`${base}/architecture/`}>{en ? "Read the architecture notes" : "Lire les notes d’architecture"} →</a></div>
-  <ol class="pipeline"><li><span>01</span><strong>{en ? "Parse" : "Parser"}</strong></li><li><span>02</span><strong>{en ? "Run on VM" : "Exécuter sur VM"}</strong></li><li><span>03</span><strong>{en ? "Use shell" : "Utiliser le shell"}</strong></li><li><span>04</span><strong>{en ? "Run LumiTest" : "Lancer LumiTest"}</strong></li><li><span>05</span><strong>{en ? "Inspect IR" : "Inspecter l’IR"}</strong></li></ol>
+  <div class="section-heading"><p class="eyebrow">Architecture</p><h2>{en ? "Understand how Lumière fits together." : "Comprendre comment Lumière s’organise."}</h2><p set:html={en ? "See how source files, modules, the command line, <code>LumiTest</code>, and the standard library connect in the current alpha." : "Voyez comment les fichiers source, les modules, la ligne de commande, <code>LumiTest</code> et la bibliothèque standard s’articulent dans l’alpha actuelle."} /><a href={`${base}/architecture/`}>{en ? "Read the architecture notes" : "Lire les notes d’architecture"} →</a></div>
+  <ol class="pipeline"><li><span>01</span><strong>{en ? "Write source" : "Écrire du source"}</strong></li><li><span>02</span><strong>{en ? "Run files" : "Lancer les fichiers"}</strong></li><li><span>03</span><strong>{en ? "Use modules" : "Utiliser les modules"}</strong></li><li><span>04</span><strong>{en ? "Run LumiTest" : "Lancer LumiTest"}</strong></li><li><span>05</span><strong>{en ? "Read errors" : "Lire les erreurs"}</strong></li></ol>
 </section>
 
 <section class="journal section wrap">
@@ -81,7 +84,7 @@ const en = locale === "en";
   .example { position: relative; z-index: 2; min-width: 0; max-width: 100%; border: 1px solid #3a505c; background: var(--prussian-deep); box-shadow: 0 1.5rem 4rem rgba(5,12,16,.22); transform: translateY(1.5rem); }
   .file, .result { display: flex; justify-content: space-between; padding: .9rem 1.1rem; color: #718893; font: .62rem var(--font-mono); text-transform: uppercase; letter-spacing: .08em; }
   .file { border-bottom: 1px solid #30434d; }.result { justify-content: flex-start; gap: 3rem; border-top: 1px solid #30434d; }.result code { color: var(--ink); text-transform: none; }
-  pre { max-width: 100%; margin: 0; padding: clamp(1.5rem, 4vw, 3.5rem); overflow-x: auto; color: #d8dee1; font: clamp(.78rem, 1.2vw, .9rem)/2 var(--font-mono); } pre i { color: #ef8a73; font-style: normal; }
+  pre { max-width: 100%; margin: 0; padding: clamp(1.5rem, 4vw, 3.5rem); overflow-x: auto; color: #d8dee1; font: clamp(.78rem, 1.2vw, .9rem)/2 var(--font-mono); white-space: pre; }
   .section { width: 100%; margin-inline: 0; padding: clamp(5.5rem, 10vw, 8rem) max(var(--gutter), calc((100% - var(--page)) / 2)); border-top: 1px solid var(--line); }
   .summary { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem 7rem; background: #171d20; border-color: #30383c; }
   .summary > *, .install > *, .architecture > *, .journal > * { min-width: 0; }
@@ -99,7 +102,8 @@ const en = locale === "en";
   footer { display: flex; justify-content: space-between; padding-block: 2rem; border-top: 1px solid var(--line); color: var(--faint); font-size: .67rem; } footer a { color: var(--muted); text-decoration: none; }
   @media (max-width: 900px) { .hero, .summary, .install, .architecture, .journal { grid-template-columns: 1fr; }.hero { min-height: auto; padding-top: clamp(3.5rem, 9vw, 5rem); padding-bottom: clamp(4rem, 10vw, 6rem); }.example { max-width: 42rem; transform: none; }.summary-copy { grid-column: 1; }.section { gap: 3rem; } }
   @media (max-width: 700px) { .hero, .section { padding-inline: var(--gutter); } h2 { font-size: clamp(1.85rem, 9vw, 2.45rem); }.summary, .install, .architecture, .journal { gap: 2.5rem; }.facts { gap: .75rem; }.facts div { min-width: 0; }.platforms a { gap: 1rem; }.platforms a > span:first-child { min-width: 0; }.platforms strong, .platforms small { overflow-wrap: anywhere; }.source { align-items: flex-start; flex-wrap: wrap; } }
-  @media (max-width: 620px) { h1 { font-size: clamp(3.2rem, 17vw, 4.5rem); }.hero-copy { max-width: none; padding-left: 1rem; }.tagline { margin-top: 1.25rem; }.section { padding-block: clamp(4rem, 14vw, 5.5rem); }.command { align-items: stretch; flex-direction: column; }.command code { display: block; overflow-x: auto; text-overflow: clip; white-space: nowrap; -webkit-overflow-scrolling: touch; }.command button { align-self: flex-start; padding: .2rem 0; }.journal a { padding-right: 2rem; } }
-  @media (max-width: 520px) { .actions { align-items: stretch; flex-direction: column; }.platforms { grid-template-columns: 1fr; }.platforms a:nth-child(n) { padding-inline: 0; border-left: 0; }.facts { grid-template-columns: 1fr; }.facts div { border-left: 0; border-top: 1px solid #30383c; padding: .9rem 0 0; }.file, .result { gap: 1rem; padding-inline: .85rem; }.result { align-items: flex-start; flex-direction: column; }.example { box-shadow: 0 1rem 2rem rgba(5,12,16,.18); } pre { padding: 1.1rem; font-size: .74rem; line-height: 1.85; }.pipeline li { grid-template-columns: 2.25rem 1fr; }.journal a { padding-right: 1.5rem; }.journal a i { right: 0; } footer { flex-direction: column; gap: .5rem; } }
+  @media (max-width: 620px) { h1 { font-size: clamp(3.2rem, 17vw, 4.5rem); }.hero { padding-top: clamp(2.75rem, 9vw, 3.75rem); }.hero-copy { max-width: none; padding-left: 1rem; }.tagline { margin-top: 1.25rem; }.section { padding-block: clamp(4rem, 14vw, 5.5rem); }.command { align-items: stretch; flex-direction: column; }.command code { display: block; overflow-x: auto; text-overflow: clip; white-space: nowrap; -webkit-overflow-scrolling: touch; }.command button { align-self: stretch; min-height: 2.75rem; padding: .2rem 0; text-align: left; }.journal a { padding-right: 2rem; } }
+  @media (max-width: 520px) { .actions { align-items: stretch; flex-direction: column; margin-top: 1.5rem; }.platforms { grid-template-columns: 1fr; }.platforms a:nth-child(n) { min-height: 4.25rem; padding-inline: 0; border-left: 0; }.facts { grid-template-columns: 1fr; }.facts div { border-left: 0; border-top: 1px solid #30383c; padding: .9rem 0 0; }.file, .result { gap: 1rem; padding-inline: .85rem; }.result { align-items: flex-start; flex-direction: column; }.example { box-shadow: 0 1rem 2rem rgba(5,12,16,.18); } pre { padding: 1.1rem; font-size: .74rem; line-height: 1.85; }.pipeline li { grid-template-columns: 2.25rem 1fr; }.journal a { min-height: 7rem; padding-right: 1.5rem; }.journal a i { right: 0; } footer { flex-direction: column; gap: .5rem; } }
+  @media (max-width: 420px) { .hero { padding-top: 2.25rem; padding-bottom: 3.25rem; gap: 2rem; }.status { margin-bottom: 1rem; }.tagline { font-size: 1.05rem; }.hero .lede { font-size: .95rem; line-height: 1.65; }.section-heading { max-width: none; } }
   @media (max-width: 380px) { h1 { font-size: clamp(2.75rem, 16vw, 3.2rem); }.hero-copy::before { display: none; }.hero-copy { padding-left: 0; }.journal a { padding-right: 0; }.journal a i { position: static; margin-top: .75rem; } }
 </style>
