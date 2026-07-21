@@ -1,8 +1,11 @@
 ---
 import InteriorPage from "../../components/InteriorPage.astro";
+import Documentation from "../../components/Documentation.astro";
 import SiteLayout from "../../layouts/SiteLayout.astro";
 import { pages, type Section } from "../../data/pages";
+import { docs } from "../../data/docs";
 import { artifacts } from "../../data/releases";
+import { highlightCode } from "../../lib/highlight";
 import { site } from "../../data/site";
 
 export function getStaticPaths() {
@@ -11,6 +14,25 @@ export function getStaticPaths() {
 
 const { section } = Astro.props as { section: Section };
 const page = pages.en[section];
+const documentation = docs.en[section];
+const helloCode = `fonction principal() {
+  afficher("Bonjour, monde!")
+}`;
+const architectureCode = `lumiere programme.lum
+lumiere
+lumiere tester tests`;
+const journalCode = `current release
+language guide
+command line
+source builds
+release notes`;
+const buildCode = `git clone ${site.repository}
+cd lumiere
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
+cmake --build build --parallel 2
+ctest --test-dir build --output-on-failure
+sudo cmake --install build
+lumiere --version`;
 ---
 <SiteLayout locale="en" title={`${page.eyebrow} — Lumière`} description={page.intro}>
   <InteriorPage locale="en" section={section} {...page}>
@@ -23,25 +45,14 @@ const page = pages.en[section];
           </div>
           <div class="panel code-panel">
             <div class="panel-head"><span>bonjour.lum</span><span>first program</span></div>
-            <pre><code><i>fonction</i> principal() &#123;
-  afficher("Bonjour, monde!")
-&#125;</code></pre>
+            <pre><code set:html={highlightCode(helloCode)} /></pre>
           </div>
         </div>
         <div class="index">
-          <a href="#syntax"><span>01</span><strong>Language surface</strong><p>Functions, variables, typed annotations, literals, named arguments, control flow, exceptions, and <code>agir selon</code>.</p></a>
-          <a href="#programs"><span>02</span><strong>Programs and modules</strong><p>File-backed modules, dotted imports, aliases with <code>comme</code>, selective imports, public exports, and built-in modules.</p></a>
-          <a href="#tools"><span>03</span><strong>Tools and workflow</strong><p>Run a program on the VM, compare with the tree-walker, open the persistent shell, inspect IR/bytecode, and run LumiTest.</p></a>
+          <a href="#setup"><span>Setup</span><strong>Set up the tools</strong><p>Install VS Code, add the Lumière extension, create a <code>.lum</code> file, and check the command line.</p></a>
+          <a href="#first-program"><span>First file</span><strong>Run a first program</strong><p>Write <code>bonjour.lum</code>, save it, run it, and understand what each line does.</p></a>
+          <a href="#values"><span>Concepts</span><strong>Learn the core ideas</strong><p>Build from values to variables, calculations, functions, return values, control flow, loops, types, modules, and tests.</p></a>
         </div>
-        <section class="detail-block" aria-label="Learning topics">
-          <h3>Core language topics</h3>
-          <div class="detail-grid">
-            <div><span>Syntax</span><p>Variables with <code>soit</code>, typed function parameters, optional return types, lists, dictionaries, text values, and named arguments.</p></div>
-            <div><span>Control flow</span><p><code>si</code>, <code>tant que</code>, <code>pour chaque</code>, <code>essayer</code>/<code>attraper</code>/<code>finalement</code>, and <code>agir selon</code> with literal and typed binding branches.</p></div>
-            <div><span>Programs</span><p>A runnable file uses <code>fonction principal()</code>. Multi-file programs can import public members from other <code>.lum</code> files.</p></div>
-            <div><span>Objects</span><p>The current alpha supports classes, inheritance, interfaces, <code>ici</code>, <code>parent</code>, and runtime checks for required interface methods.</p></div>
-          </div>
-        </section>
       </>
     )}
 
@@ -54,28 +65,14 @@ const page = pages.en[section];
           </div>
           <div class="panel code-panel">
             <div class="panel-head"><span>release {site.version}</span><span>architecture map</span></div>
-            <pre><code>lumiere programme.lum
-lumiere --vm programme.lum
-lumiere --tw programme.lum
-lumiere ir programme.lum
-lumiere bytecode programme.lum
-lumiere tester tests</code></pre>
+            <pre><code set:html={highlightCode(architectureCode)} /></pre>
           </div>
         </div>
         <div class="index">
-          <a href="#language"><span>01</span><strong>Parser and language model</strong><p>The documented surface covers declarations, typed values, modules, objects, collections, control flow, and runtime diagnostics.</p></a>
-          <a href="#running-programs"><span>02</span><strong>Execution backends</strong><p>The bytecode VM is the production default. The tree-walker remains available for the shell, diagnostics, and backend comparison.</p></a>
-          <a href="#project-boundaries"><span>03</span><strong>Standard library and tools</strong><p>Built-in modules include Maths, Fichier, Chemin, Texte, Temps, and Aléatoire; tooling includes inspection commands and LumiTest.</p></a>
+          <a href="#language"><span>01</span><strong>Language surface</strong><p>The documented surface covers declarations, typed values, modules, objects, collections, and control flow.</p></a>
+          <a href="#running-programs"><span>02</span><strong>Command line</strong><p>Use the command line to run files, open the shell, test projects, and inspect programs when needed.</p></a>
+          <a href="#project-boundaries"><span>03</span><strong>Standard library and tools</strong><p>Built-in modules include <code>Maths</code>, <code>Fichier</code>, <code>Chemin</code>, <code>Texte</code>, <code>Temps</code>, and <code>Aléatoire</code>; project tooling includes <code>LumiTest</code>.</p></a>
         </div>
-        <section class="detail-block" aria-label="Architecture details">
-          <h3>Current implementation boundaries</h3>
-          <div class="detail-grid">
-            <div><span>Execution</span><p>Running <code>lumiere programme.lum</code> uses the bytecode VM by default. <code>--vm</code> and <code>--tw</code> make backend selection explicit.</p></div>
-            <div><span>Shell</span><p>Running <code>lumiere</code> with no arguments starts a persistent tree-walker shell that keeps declarations between submissions.</p></div>
-            <div><span>Inspection</span><p><code>lumiere ir</code> prints the linked intermediate representation. <code>lumiere bytecode</code> prints decoded bytecode without executing it.</p></div>
-            <div><span>Limits</span><p>Some checks remain runtime-driven in the alpha. Pattern exhaustiveness and full interface signature conformance are not complete yet.</p></div>
-          </div>
-        </section>
       </>
     )}
 
@@ -88,11 +85,7 @@ lumiere tester tests</code></pre>
           </div>
           <div class="panel code-panel">
             <div class="panel-head"><span>journal</span><span>project notes</span></div>
-            <pre><code>current release
-language behavior
-command line
-source builds
-runtime checks</code></pre>
+            <pre><code set:html={highlightCode(journalCode)} /></pre>
           </div>
         </div>
         <div class="journal-list">
@@ -114,13 +107,7 @@ runtime checks</code></pre>
           </div>
           <div class="panel code-panel">
             <div class="panel-head"><span>build from source</span><span>build, test, install</span></div>
-            <pre><code>git clone {site.repository}
-cd lumiere
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
-cmake --build build --parallel 2
-ctest --test-dir build --output-on-failure
-sudo cmake --install build
-lumiere --version</code></pre>
+            <pre><code set:html={highlightCode(buildCode)} /></pre>
           </div>
         </div>
         <div class="release-table">
@@ -139,16 +126,9 @@ lumiere --version</code></pre>
             <i>GitHub</i>
           </a>
         </div>
-        <section class="detail-block" aria-label="Installation notes">
-          <h3>Pick the right path</h3>
-          <div class="detail-grid">
-            <div><span>macOS</span><p>Use the Apple Silicon package on <code>arm64</code> Macs and the Intel package on <code>x86_64</code> Macs.</p></div>
-            <div><span>Linux</span><p>The published Debian package is for x86-64 systems. ARM systems, including Raspberry Pi, should build from source.</p></div>
-            <div><span>Windows</span><p>The MSI targets x86-64 Windows. The PowerShell installer is per-user and prints the installation directory.</p></div>
-            <div><span>Source</span><p>Source builds require Git, CMake 3.23 or newer, and a C++20 compiler. Use a single build job on low-memory machines.</p></div>
-          </div>
-        </section>
       </>
     )}
+
+    {documentation && <Documentation content={documentation} locale="en" />}
   </InteriorPage>
 </SiteLayout>

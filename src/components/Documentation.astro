@@ -1,0 +1,413 @@
+---
+import { highlightCode } from "../lib/highlight";
+import { formatInlineCode } from "../lib/inline-code";
+import type { DocsPage } from "../data/docs";
+import type { Locale } from "../data/site";
+
+interface Props {
+  content: DocsPage;
+  locale: Locale;
+}
+
+const { content, locale } = Astro.props;
+const labels = locale === "fr"
+  ? { eyebrow: "Documentation", sections: "Sections", back: "Toutes les sections", previous: "Précédent", next: "Suivant" }
+  : { eyebrow: "Documentation", sections: "Sections", back: "All sections", previous: "Previous", next: "Next" };
+---
+<section class="docs" aria-label={content.title}>
+  <header class="docs-head">
+    <p class="eyebrow">{labels.eyebrow}</p>
+    <h3>{content.title}</h3>
+    <p set:html={formatInlineCode(content.intro)} />
+  </header>
+
+  <nav id="sections" class="section-index" aria-label={labels.sections}>
+    <span>{labels.sections}</span>
+    <div>
+      {content.sections.map((section) => (
+        <a href={`#${section.id}`}>{section.title}</a>
+      ))}
+    </div>
+  </nav>
+
+  <div class="docs-sections">
+    {content.sections.map((section, index) => {
+      const previous = content.sections[index - 1];
+      const next = content.sections[index + 1];
+
+      return (
+        <article id={section.id} class="docs-section">
+          <h4>{section.title}</h4>
+          {section.body.map((paragraph) => <p set:html={formatInlineCode(paragraph)} />)}
+          {section.bullets && (
+            <ul>
+              {section.bullets.map((item) => <li set:html={formatInlineCode(item)} />)}
+            </ul>
+          )}
+          {section.refs && (
+            <dl class="docs-ref">
+              {section.refs.map((item) => (
+                <>
+                  <dt set:html={formatInlineCode(item.term)} />
+                  <dd set:html={formatInlineCode(item.description)} />
+                </>
+              ))}
+            </dl>
+          )}
+          {section.code && <pre><code set:html={highlightCode(section.code)} /></pre>}
+          {section.note && <p class="docs-note" set:html={formatInlineCode(section.note)} />}
+          <nav class="section-nav" aria-label={`${section.title} navigation`}>
+            <a class:list={["section-nav-link", !previous && "disabled"]} href={previous ? `#${previous.id}` : undefined} aria-disabled={!previous}>
+              <span>{labels.previous}</span>
+              <strong>{previous?.title ?? "—"}</strong>
+            </a>
+            <a class="section-nav-back" href="#sections">{labels.back}</a>
+            <a class:list={["section-nav-link", "next", !next && "disabled"]} href={next ? `#${next.id}` : undefined} aria-disabled={!next}>
+              <span>{labels.next}</span>
+              <strong>{next?.title ?? "—"}</strong>
+            </a>
+          </nav>
+        </article>
+      );
+    })}
+  </div>
+</section>
+
+<style>
+  .docs {
+    margin-top: clamp(4rem, 8vw, 7rem);
+    padding-top: clamp(3rem, 6vw, 5rem);
+    border-top: 1px solid #30383c;
+  }
+
+  .docs-head {
+    max-width: 48rem;
+  }
+
+  .docs-head h3 {
+    margin: 0;
+    color: var(--ink);
+    font: 500 clamp(2rem, 4vw, 3.2rem)/1.08 var(--font-body);
+    letter-spacing: -.04em;
+  }
+
+  .docs-head p:last-child {
+    max-width: 42rem;
+    margin: 1rem 0 0;
+    color: #a9b3b8;
+  }
+
+  .section-index {
+    max-width: 58rem;
+    margin-top: clamp(2.5rem, 6vw, 4rem);
+    border-top: 1px solid #30383c;
+  }
+
+  .section-index > span {
+    display: block;
+    padding: .85rem 0;
+    border-bottom: 1px solid #30383c;
+    color: #758187;
+    font: .64rem var(--font-mono);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .section-index > div {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    border: 1px solid #30383c;
+    border-top: 0;
+    background: #30383c;
+  }
+
+  .section-index a {
+    display: flex;
+    align-items: center;
+    min-height: 3.75rem;
+    padding: .95rem 1rem;
+    background: #171d20;
+    color: #c8d0d4;
+    font-size: .86rem;
+    line-height: 1.35;
+    text-decoration: none;
+    transition: background .15s, color .15s;
+  }
+
+  .section-index a:hover {
+    background: #1d2529;
+    color: var(--ink);
+  }
+
+  .docs-sections {
+    max-width: 48rem;
+    margin-top: clamp(3rem, 7vw, 5rem);
+    min-width: 0;
+  }
+
+  .docs-section {
+    display: none;
+    max-width: 48rem;
+    padding: clamp(2rem, 5vw, 3rem) 0;
+    border-top: 1px solid #30383c;
+    scroll-margin-top: 2rem;
+  }
+
+  .docs-section:first-child {
+    display: block;
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .docs:has(.docs-section:target) .docs-section,
+  .docs:has(.section-index:target) .docs-section {
+    display: none;
+  }
+
+  .docs:has(.docs-section:target) .docs-section:target {
+    display: block;
+  }
+
+  .docs-section h4 {
+    margin: 0 0 1rem;
+    color: var(--ink);
+    font: 500 clamp(1.45rem, 3vw, 2rem)/1.16 var(--font-body);
+    letter-spacing: -.03em;
+  }
+
+  .docs-section p {
+    max-width: none;
+    margin: 0;
+    color: #aab3b8;
+  }
+
+  .docs-section p + p,
+  .docs-section p + ul,
+  .docs-section ul + pre,
+  .docs-section dl + pre,
+  .docs-section p + pre,
+  .docs-section pre + p {
+    margin-top: 1rem;
+  }
+
+  .docs-section ul {
+    margin: 1rem 0 0;
+    padding-left: 1.1rem;
+    color: #aab3b8;
+  }
+
+  .docs-section li + li {
+    margin-top: .45rem;
+  }
+
+  .docs-ref {
+    display: grid;
+    grid-template-columns: minmax(8rem, .42fr) minmax(0, 1fr);
+    margin: 1.25rem 0 0;
+    border-top: 1px solid #30383c;
+  }
+
+  .docs-ref dt,
+  .docs-ref dd {
+    margin: 0;
+    padding: .85rem 0;
+    border-bottom: 1px solid #30383c;
+  }
+
+  .docs-ref dt {
+    padding-right: 1rem;
+    color: #dde3e5;
+    font: .78rem/1.5 var(--font-mono);
+    overflow-wrap: anywhere;
+  }
+
+  .docs-ref dd {
+    color: #aab3b8;
+    font-size: .9rem;
+  }
+
+  .docs-section pre {
+    max-width: 100%;
+    margin: 1.25rem 0 0;
+    padding: 1.1rem;
+    overflow-x: auto;
+    border: 1px solid #30383c;
+    background: linear-gradient(180deg, #151b1f 0%, #12171a 100%);
+    color: #dde3e5;
+    font: .78rem/1.75 var(--font-mono);
+    white-space: pre;
+  }
+
+  .docs-section pre code {
+    color: #d7dddf;
+  }
+
+  .docs-note {
+    padding-left: 1rem;
+    border-left: 2px solid #d98270;
+    color: #bec6ca !important;
+  }
+
+  .section-nav {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 1px;
+    margin-top: clamp(1.75rem, 4vw, 2.5rem);
+    border: 1px solid #30383c;
+    background: #30383c;
+  }
+
+  .section-nav a {
+    min-width: 0;
+    background: #171d20;
+    text-decoration: none;
+  }
+
+  .section-nav-link {
+    display: flex;
+    min-height: 5.25rem;
+    flex-direction: column;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .section-nav-link.next {
+    text-align: right;
+  }
+
+  .section-nav-link span {
+    color: #758187;
+    font: .62rem var(--font-mono);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .section-nav-link strong {
+    display: block;
+    margin-top: .4rem;
+    overflow: hidden;
+    color: var(--ink);
+    font-size: .88rem;
+    font-weight: 500;
+    line-height: 1.3;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .section-nav-link.disabled {
+    pointer-events: none;
+  }
+
+  .section-nav-link.disabled strong,
+  .section-nav-link.disabled span {
+    color: #586267;
+  }
+
+  .section-nav-back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 5.25rem;
+    padding: 0 1.25rem;
+    color: #d98270;
+    font: .68rem var(--font-mono);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 860px) {
+    .section-index,
+    .docs-sections {
+      max-width: none;
+    }
+
+    .section-index > div {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .docs {
+      margin-top: 3rem;
+      padding-top: 2.5rem;
+    }
+
+    .docs-head h3 {
+      font-size: clamp(1.8rem, 10vw, 2.35rem);
+    }
+
+    .section-index {
+      margin-top: 2rem;
+    }
+
+    .section-index a {
+      min-height: 3.35rem;
+      padding: .85rem .9rem;
+      font-size: .82rem;
+    }
+
+    .docs-sections {
+      margin-top: 2.75rem;
+    }
+
+    .docs-section {
+      padding-block: 2rem;
+      scroll-margin-top: calc(var(--header) + 1rem);
+    }
+
+    .docs-section pre {
+      padding: .9rem;
+      font-size: .72rem;
+      line-height: 1.7;
+    }
+
+    .docs-ref {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .docs-ref dt {
+      padding-bottom: .15rem;
+      border-bottom: 0;
+    }
+
+    .docs-ref dd {
+      padding-top: 0;
+    }
+
+    .docs-note {
+      padding-left: .85rem;
+    }
+
+    .section-nav {
+      grid-template-columns: 1fr;
+    }
+
+    .section-nav-link,
+    .section-nav-back {
+      min-height: 4rem;
+    }
+
+    .section-nav-link.next {
+      text-align: left;
+    }
+
+    .section-nav-link strong {
+      white-space: normal;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .docs-section h4 {
+      font-size: 1.35rem;
+    }
+
+    .docs-section pre {
+      margin-inline: calc(var(--gutter) * -1);
+      border-inline: 0;
+      padding-inline: var(--gutter);
+    }
+  }
+</style>
