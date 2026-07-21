@@ -7,28 +7,36 @@ import type { Locale } from "../data/site";
 interface Props {
   content: DocsPage;
   locale: Locale;
+  standalone?: boolean;
+  showHeader?: boolean;
+  showIndex?: boolean;
 }
 
-const { content, locale } = Astro.props;
+const { content, locale, standalone = false, showHeader = true, showIndex = true } = Astro.props;
+const backHref = showIndex ? "#sections" : `/${locale}/learn/`;
 const labels = locale === "fr"
   ? { eyebrow: "Documentation", sections: "Sections", back: "Toutes les sections", previous: "Précédent", next: "Suivant" }
   : { eyebrow: "Documentation", sections: "Sections", back: "All sections", previous: "Previous", next: "Next" };
 ---
-<section class="docs" aria-label={content.title}>
-  <header class="docs-head">
-    <p class="eyebrow">{labels.eyebrow}</p>
-    <h3>{content.title}</h3>
-    <p set:html={formatInlineCode(content.intro)} />
-  </header>
+<section class:list={["docs", standalone && "standalone", !showIndex && "no-index"]} aria-label={content.title}>
+  {showHeader && (
+    <header class="docs-head">
+      <p class="eyebrow">{labels.eyebrow}</p>
+      <h3>{content.title}</h3>
+      <p set:html={formatInlineCode(content.intro)} />
+    </header>
+  )}
 
-  <nav id="sections" class="section-index" aria-label={labels.sections}>
-    <span>{labels.sections}</span>
-    <div>
-      {content.sections.map((section) => (
-        <a href={`#${section.id}`}>{section.title}</a>
-      ))}
-    </div>
-  </nav>
+  {showIndex && (
+    <nav id="sections" class="section-index" aria-label={labels.sections}>
+      <span>{labels.sections}</span>
+      <div>
+        {content.sections.map((section) => (
+          <a href={`#${section.id}`}>{section.title}</a>
+        ))}
+      </div>
+    </nav>
+  )}
 
   <div class="docs-sections">
     {content.sections.map((section, index) => {
@@ -61,7 +69,7 @@ const labels = locale === "fr"
               <span>{labels.previous}</span>
               <strong>{previous?.title ?? "—"}</strong>
             </a>
-            <a class="section-nav-back" href="#sections">{labels.back}</a>
+            <a class="section-nav-back" href={backHref}>{labels.back}</a>
             <a class:list={["section-nav-link", "next", !next && "disabled"]} href={next ? `#${next.id}` : undefined} aria-disabled={!next}>
               <span>{labels.next}</span>
               <strong>{next?.title ?? "—"}</strong>
@@ -78,6 +86,12 @@ const labels = locale === "fr"
     margin-top: clamp(4rem, 8vw, 7rem);
     padding-top: clamp(3rem, 6vw, 5rem);
     border-top: 1px solid #30383c;
+  }
+
+  .docs.standalone {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
   }
 
   .docs-head {
@@ -101,6 +115,24 @@ const labels = locale === "fr"
     max-width: 58rem;
     margin-top: clamp(2.5rem, 6vw, 4rem);
     border-top: 1px solid #30383c;
+  }
+
+  .docs.standalone .section-index {
+    margin-top: 0;
+  }
+
+  .docs.no-index .docs-sections {
+    margin-top: 0;
+  }
+
+  .docs.standalone.no-index .docs-sections {
+    max-width: min(100%, 72rem);
+  }
+
+  .docs.standalone.no-index .docs-section {
+    max-width: min(100%, 72rem);
+    padding-top: 0;
+    border-top: 0;
   }
 
   .section-index > span {

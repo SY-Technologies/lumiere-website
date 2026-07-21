@@ -6,6 +6,7 @@ import { pages, type Section } from "../../data/pages";
 import { docs } from "../../data/docs";
 import { artifacts } from "../../data/releases";
 import { highlightCode } from "../../lib/highlight";
+import { formatInlineCode } from "../../lib/inline-code";
 import { site } from "../../data/site";
 
 export function getStaticPaths() {
@@ -15,12 +16,16 @@ export function getStaticPaths() {
 const { section } = Astro.props as { section: Section };
 const page = pages.en[section];
 const documentation = docs.en[section];
+const learnSections = docs.en.learn!.sections;
 const helloCode = `fonction principal() {
   afficher("Bonjour, monde!")
 }`;
-const architectureCode = `lumiere programme.lum
-lumiere
-lumiere tester tests`;
+const architectureCode = `source
+  -> tokens
+  -> AST
+  -> runtime values
+  -> tree-walk or VM
+  -> diagnostics`;
 const journalCode = `current release
 language guide
 command line
@@ -48,11 +53,21 @@ lumiere --version`;
             <pre><code set:html={highlightCode(helloCode)} /></pre>
           </div>
         </div>
-        <div class="index">
-          <a href="#setup"><span>Setup</span><strong>Set up the tools</strong><p>Install VS Code, add the Lumière extension, create a <code>.lum</code> file, and check the command line.</p></a>
-          <a href="#first-program"><span>First file</span><strong>Run a first program</strong><p>Write <code>bonjour.lum</code>, save it, run it, and understand what each line does.</p></a>
-          <a href="#values"><span>Concepts</span><strong>Learn the core ideas</strong><p>Build from values to variables, calculations, functions, return values, control flow, loops, types, modules, and tests.</p></a>
-        </div>
+        <nav class="doc-index" aria-label="Learning documentation index">
+          <div class="doc-index-head">
+            <span>Documentation index</span>
+            <a href="/en/learn/tutorial/#setup">Open tutorial</a>
+          </div>
+          <div class="doc-index-list">
+            {learnSections.map((tutorialSection, index) => (
+              <a href={`/en/learn/tutorial/#${tutorialSection.id}`}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <strong>{tutorialSection.title}</strong>
+                <p set:html={formatInlineCode(tutorialSection.body[0] ?? "")} />
+              </a>
+            ))}
+          </div>
+        </nav>
       </>
     )}
 
@@ -69,9 +84,9 @@ lumiere --version`;
           </div>
         </div>
         <div class="index">
-          <a href="#language"><span>01</span><strong>Language surface</strong><p>The documented surface covers declarations, typed values, modules, objects, collections, and control flow.</p></a>
-          <a href="#running-programs"><span>02</span><strong>Command line</strong><p>Use the command line to run files, open the shell, test projects, and inspect programs when needed.</p></a>
-          <a href="#project-boundaries"><span>03</span><strong>Standard library and tools</strong><p>Built-in modules include <code>Maths</code>, <code>Fichier</code>, <code>Chemin</code>, <code>Texte</code>, <code>Temps</code>, and <code>Aléatoire</code>; project tooling includes <code>LumiTest</code>.</p></a>
+          <a href="#french-source"><span>01</span><strong>French source</strong><p>How Lumière accepts accented identifiers, French keywords, Unicode symbols, and ASCII aliases.</p></a>
+          <a href="#execution-pipeline"><span>02</span><strong>Execution pipeline</strong><p>How source moves through tokenization, parsing, diagnostics, tree-walk execution, and VM lowering.</p></a>
+          <a href="#luminet-module"><span>03</span><strong>LumiNet</strong><p>How networking is built from capability objects, native state, sockets, HTTP routes, and Canal callbacks.</p></a>
         </div>
       </>
     )}
@@ -129,6 +144,6 @@ lumiere --version`;
       </>
     )}
 
-    {documentation && <Documentation content={documentation} locale="en" />}
+    {documentation && section !== "learn" && <Documentation content={documentation} locale="en" />}
   </InteriorPage>
 </SiteLayout>

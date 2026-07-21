@@ -6,6 +6,7 @@ import { pages, type Section } from "../../data/pages";
 import { docs } from "../../data/docs";
 import { artifacts } from "../../data/releases";
 import { highlightCode } from "../../lib/highlight";
+import { formatInlineCode } from "../../lib/inline-code";
 import { site } from "../../data/site";
 
 export function getStaticPaths() {
@@ -15,12 +16,16 @@ export function getStaticPaths() {
 const { section } = Astro.props as { section: Section };
 const page = pages.fr[section];
 const documentation = docs.fr[section];
+const learnSections = docs.fr.learn!.sections;
 const helloCode = `fonction principal() {
   afficher("Bonjour, monde!")
 }`;
-const architectureCode = `lumiere programme.lum
-lumiere
-lumiere tester tests`;
+const architectureCode = `source
+  -> tokens
+  -> AST
+  -> valeurs runtime
+  -> tree-walk ou VM
+  -> diagnostics`;
 const journalCode = `version actuelle
 guide du langage
 ligne de commande
@@ -48,11 +53,21 @@ lumiere --version`;
             <pre><code set:html={highlightCode(helloCode)} /></pre>
           </div>
         </div>
-        <div class="index">
-          <a href="#installation-outils"><span>Outils</span><strong>Préparer les outils</strong><p>Installez VS Code, ajoutez l’extension Lumière, créez un fichier <code>.lum</code> et vérifiez la ligne de commande.</p></a>
-          <a href="#premier-programme"><span>Premier fichier</span><strong>Lancer un premier programme</strong><p>Écrivez <code>bonjour.lum</code>, enregistrez-le, lancez-le et comprenez chaque ligne.</p></a>
-          <a href="#valeurs"><span>Concepts</span><strong>Apprendre les idées de base</strong><p>Avancez des valeurs vers variables, calculs, fonctions, valeurs retournées, contrôle de flux, boucles, types, modules et tests.</p></a>
-        </div>
+        <nav class="doc-index" aria-label="Index de la documentation d’apprentissage">
+          <div class="doc-index-head">
+            <span>Index de documentation</span>
+            <a href="/fr/learn/tutorial/#installation-outils">Ouvrir le tutoriel</a>
+          </div>
+          <div class="doc-index-list">
+            {learnSections.map((tutorialSection, index) => (
+              <a href={`/fr/learn/tutorial/#${tutorialSection.id}`}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <strong>{tutorialSection.title}</strong>
+                <p set:html={formatInlineCode(tutorialSection.body[0] ?? "")} />
+              </a>
+            ))}
+          </div>
+        </nav>
       </>
     )}
 
@@ -69,9 +84,9 @@ lumiere --version`;
           </div>
         </div>
         <div class="index">
-          <a href="#langage"><span>01</span><strong>Surface du langage</strong><p>La surface documentée couvre déclarations, valeurs typées, modules, objets, collections et contrôle de flux.</p></a>
-          <a href="#executer"><span>02</span><strong>Ligne de commande</strong><p>Utilisez la ligne de commande pour lancer des fichiers, ouvrir le shell, tester des projets et inspecter les programmes si nécessaire.</p></a>
-          <a href="#frontieres"><span>03</span><strong>Bibliothèque standard et outils</strong><p>Les modules intégrés incluent <code>Maths</code>, <code>Fichier</code>, <code>Chemin</code>, <code>Texte</code>, <code>Temps</code> et <code>Aléatoire</code> ; l’outillage inclut <code>LumiTest</code>.</p></a>
+          <a href="#source-francais"><span>01</span><strong>Source français</strong><p>Comment Lumière accepte identifiants accentués, mots-clés français, symboles Unicode et alias ASCII.</p></a>
+          <a href="#pipeline-execution"><span>02</span><strong>Pipeline d’exécution</strong><p>Comment le source passe par tokenisation, parsing, diagnostics, exécution tree-walk et lowering VM.</p></a>
+          <a href="#luminet-module"><span>03</span><strong>LumiNet</strong><p>Comment le réseau est construit avec objets de capacités, état natif, sockets, routes HTTP et callbacks Canal.</p></a>
         </div>
       </>
     )}
@@ -129,6 +144,6 @@ lumiere --version`;
       </>
     )}
 
-    {documentation && <Documentation content={documentation} locale="fr" />}
+    {documentation && section !== "learn" && <Documentation content={documentation} locale="fr" />}
   </InteriorPage>
 </SiteLayout>

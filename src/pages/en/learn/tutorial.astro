@@ -1,0 +1,20 @@
+---
+import Documentation from "../../../components/Documentation.astro";
+import InteriorPage from "../../../components/InteriorPage.astro";
+import SiteLayout from "../../../layouts/SiteLayout.astro";
+import { docs } from "../../../data/docs";
+
+const content = docs.en.learn!;
+---
+<SiteLayout locale="en" title="Lumière tutorial — Learn" description={content.intro}>
+  <InteriorPage
+    locale="en"
+    section="learn"
+    eyebrow="Tutorial"
+    title="Learn Lumière from zero."
+    intro="Work through the guide one section at a time, from setup and first programs to functions, types, modules, tests, and the standard library."
+    reader
+  >
+    <Documentation content={content} locale="en" standalone showHeader={false} showIndex={false} />
+  </InteriorPage>
+</SiteLayout>
