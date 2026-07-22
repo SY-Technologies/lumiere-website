@@ -8,7 +8,7 @@ const inlinePatterns = [
   /\b[A-Za-zÀ-ÖØ-öø-ÿ_][A-Za-zÀ-ÖØ-öø-ÿ0-9_]*(?:\.[A-Za-zÀ-ÖØ-öø-ÿ_][A-Za-zÀ-ÖØ-öø-ÿ0-9_]*)+\b/gu,
   /\b[A-Za-zÀ-ÖØ-öø-ÿ_][A-Za-zÀ-ÖØ-öø-ÿ0-9_]*\([^)]*\)/gu,
   /[A-Za-zÀ-ÖØ-öø-ÿ_][A-Za-zÀ-ÖØ-öø-ÿ0-9_]*\[[^\]]+\]/gu,
-  /\b(?:Entier|Décimal|Booléen|Texte|Rien|Universel|Liste|ListeFixe|Dictionnaire|Ensemble|Symbole)\b/g,
+  /\b(?:Entier|Décimal|Logique|Texte|Rien|Universel|Liste|ListeFixe|Dictionnaire|Ensemble|Symbole)\b/g,
   /\b(?:Maths|Fichier|Chemin|Temps|Texte|Aléatoire|LumiTest|Salutations)\b/g,
 ];
 

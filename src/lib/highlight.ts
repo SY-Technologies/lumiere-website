@@ -36,13 +36,13 @@ const keywords = new Set([
 ]);
 
 const types = new Set([
-  "Booléen",
   "Décimal",
   "Dictionnaire",
   "Ensemble",
   "Entier",
   "Liste",
   "ListeFixe",
+  "Logique",
   "Rien",
   "Symbole",
   "Texte",
