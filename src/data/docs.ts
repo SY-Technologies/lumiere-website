@@ -8,6 +8,7 @@ export interface DocsSection {
   bullets?: string[];
   refs?: { term: string; description: string }[];
   code?: string;
+  examples?: { title: string; body: string; code: string }[];
   note?: string;
 }
 
@@ -53,6 +54,23 @@ export const docs: DocsByLocale = {
           code: `fonction principal() {
     afficher("Bonjour, monde!")
 }`,
+          examples: [
+            {
+              title: "Print two lines",
+              body: "`principal` can contain more than one instruction. Lumière runs them from top to bottom, so the terminal output follows the same order as the lines in the file.",
+              code: `fonction principal() {
+    afficher("Bonjour")
+    afficher("Bienvenue dans Lumière")
+}`,
+            },
+            {
+              title: "Change only the text",
+              body: "The quotation marks are part of the syntax. The words inside them are your data. Change the words, but keep the opening and closing quotes.",
+              code: `fonction principal() {
+    afficher("Je viens d'écrire mon premier programme.")
+}`,
+            },
+          ],
           note: "Save the file, then run it with `lumiere bonjour.lum` in the terminal. You should see `Bonjour, monde!`. If you do, change the text between the quotes, save, and run the command again.",
         },
         {
@@ -84,7 +102,26 @@ export const docs: DocsByLocale = {
     afficher("Lumière")
     afficher(vrai)
 }`,
-          note: "Run this once, then add `afficher(faux)` and run it again. 42 is an Entier, 3.14 is a Décimal, text is Texte, and `vrai`/`faux` are Booléen values.",
+          examples: [
+            {
+              title: "Use values directly",
+              body: "A value can be written directly where it is needed. This is useful while learning because each line has one visible result.",
+              code: `fonction principal() {
+    afficher("Nom")
+    afficher(2026)
+    afficher(faux)
+}`,
+            },
+            {
+              title: "Combine text and a number",
+              body: "When you put text and a number together with `+`, Lumière builds one text output. This lets you label what you print.",
+              code: `fonction principal() {
+    afficher("score=" + 10)
+    afficher("niveau=" + 2)
+}`,
+            },
+          ],
+          note: "Run this once, then add `afficher(faux)` and run it again. 42 is an Entier, 3.14 is a Décimal, text is Texte, and `vrai`/`faux` are Logique values.",
         },
         {
           id: "variables-for-memory",
@@ -100,6 +137,33 @@ export const docs: DocsByLocale = {
     afficher(nom)
     afficher(age)
 }`,
+          examples: [
+            {
+              title: "Name a value once, reuse it several times",
+              body: "The value stored in `nom` does not disappear after the first `afficher`. You can use the same variable anywhere after it has been created.",
+              code: `fonction principal() {
+    soit nom = "Ada"
+
+    afficher(nom)
+    afficher("Bonjour " + nom)
+    afficher(nom + " apprend Lumière")
+}`,
+            },
+            {
+              title: "Update a variable when the information changes",
+              body: "A variable can be assigned a new value later. Read this as: the score starts at 0, then becomes 10, then becomes 15.",
+              code: `fonction principal() {
+    soit score = 0
+    afficher(score)
+
+    score = 10
+    afficher(score)
+
+    score = score + 5
+    afficher(score)
+}`,
+            },
+          ],
           note: "Change `nom` to your own name and `age` to another number. Then add `afficher(\"Nom: \" + nom)`. Choose names that describe what the value means; `nom` is clearer than `x`.",
         },
         {
@@ -116,6 +180,37 @@ export const docs: DocsByLocale = {
 
     afficher("total=" + total)
 }`,
+          examples: [
+            {
+              title: "Build a small receipt",
+              body: "This example keeps each step visible. The subtotal is calculated first, then tax, then the final total. Naming each step makes the calculation easier to check.",
+              code: `fonction principal() {
+    soit prix = 20
+    soit quantite = 3
+    soit sous_total = prix * quantite
+    soit taxe = sous_total * 0.05
+    soit total = sous_total + taxe
+
+    afficher("sous-total=" + sous_total)
+    afficher("taxe=" + taxe)
+    afficher("total=" + total)
+}`,
+            },
+            {
+              title: "Calculate an average",
+              body: "An average is a total divided by a count. Write the program in the same order you would explain the idea out loud.",
+              code: `fonction principal() {
+    soit premiere_note = 12
+    soit deuxieme_note = 16
+    soit troisieme_note = 14
+
+    soit total = premiere_note + deuxieme_note + troisieme_note
+    soit moyenne = total / 3
+
+    afficher("moyenne=" + moyenne)
+}`,
+            },
+          ],
           note: "Make this example your first small calculator: add `taxe`, calculate `total_avec_taxe`, and print both totals. If the answer surprises you, print each variable on its own line before printing the final result.",
         },
         {
@@ -133,6 +228,35 @@ fonction principal() {
     afficher(saluer("Ada"))
     afficher(saluer("Camille"))
 }`,
+          examples: [
+            {
+              title: "Make the repeated part explicit",
+              body: "Without a function, you would copy the same greeting logic for each person. With a function, the rule lives in one place and the input changes.",
+              code: `fonction saluer(nom: Texte) -> Texte {
+    retourne "Bonjour, " + nom
+}
+
+fonction principal() {
+    soit premier = saluer("Ada")
+    soit deuxieme = saluer("Grace")
+
+    afficher(premier)
+    afficher(deuxieme)
+}`,
+            },
+            {
+              title: "Use more than one parameter",
+              body: "A function can receive several values. Each parameter needs a name and a type, and the call must provide the values the function needs.",
+              code: `fonction presenter(nom: Texte, age: Entier) -> Texte {
+    retourne nom + " a " + age + " ans"
+}
+
+fonction principal() {
+    afficher(presenter("Ada", 36))
+    afficher(presenter("Grace", 85))
+}`,
+            },
+          ],
           note: "Read `saluer(nom: Texte)` as: saluer needs one Texte value named nom. Add a second function named `crier` that returns the same name with `!` at the end, then call it from `principal`.",
         },
         {
@@ -152,6 +276,36 @@ fonction principal() {
     afficher(resultat)
     afficher(double(10))
 }`,
+          examples: [
+            {
+              title: "Return early when the answer is known",
+              body: "`retourne` also stops the function. In this example, a negative score immediately returns 0, so the final line only runs for scores that are not negative.",
+              code: `fonction corriger_score(score: Entier) -> Entier {
+    si (score < 0) {
+        retourne 0
+    }
+
+    retourne score
+}
+
+fonction principal() {
+    afficher(corriger_score(-3))
+    afficher(corriger_score(12))
+}`,
+            },
+            {
+              title: "Store the returned answer",
+              body: "A returned value can be kept in a variable. This makes the next line easier to read because the calculation already has a name.",
+              code: `fonction ajouter_taxe(prix: Décimal) -> Décimal {
+    retourne prix * 1.05
+}
+
+fonction principal() {
+    soit total = ajouter_taxe(20.0)
+    afficher("total=" + total)
+}`,
+            },
+          ],
           note: "`-> Entier` means this function promises to return an Entier. Try changing `retourne nombre * 2` to `retourne \"non\"` and run the file. The error is part of the lesson: Lumière is checking the promise.",
         },
         {
@@ -188,6 +342,43 @@ fonction principal() {
     afficher_statut(20)
     afficher_statut(12)
 }`,
+          examples: [
+            {
+              title: "Choose a message from a score",
+              body: "The condition is the question inside parentheses. If `score >= 10` is true, Lumière runs the first block. Otherwise, it runs the `sinon` block.",
+              code: `fonction afficher_resultat(score: Entier) {
+    si (score >= 10) {
+        afficher("réussi")
+    } sinon {
+        afficher("à reprendre")
+    }
+}
+
+fonction principal() {
+    afficher_resultat(14)
+    afficher_resultat(8)
+}`,
+            },
+            {
+              title: "Handle three ranges",
+              body: "You can put another `si` inside `sinon` when there are more than two paths. Read the branches from top to bottom.",
+              code: `fonction niveau(points: Entier) -> Texte {
+    si (points >= 90) {
+        retourne "excellent"
+    } sinon si (points >= 60) {
+        retourne "correct"
+    } sinon {
+        retourne "à travailler"
+    }
+}
+
+fonction principal() {
+    afficher(niveau(95))
+    afficher(niveau(72))
+    afficher(niveau(40))
+}`,
+            },
+          ],
           note: "Change the ages to 18, 17, and 0. Then change the condition from `>= 18` to `> 18` and observe exactly which output changes.",
         },
         {
@@ -204,17 +395,46 @@ fonction principal() {
         afficher(note)
     }
 }`,
+          examples: [
+            {
+              title: "Turn many values into one total",
+              body: "The loop repeats the same addition for each note. `total` starts at 0, then grows each time the loop sees a new value.",
+              code: `fonction principal() {
+    soit notes = [10, 12, 14]
+    soit total = 0
+
+    pour chaque note dans notes {
+        total = total + note
+    }
+
+    afficher("total=" + total)
+}`,
+            },
+            {
+              title: "Print numbered-looking output manually",
+              body: "A loop can update more than one variable. Here `rang` tracks which item is currently being printed.",
+              code: `fonction principal() {
+    soit noms = ["Ada", "Grace", "Camille"]
+    soit rang = 1
+
+    pour chaque nom dans noms {
+        afficher(rang + ". " + nom)
+        rang = rang + 1
+    }
+}`,
+            },
+          ],
           note: "Add a variable named `total` before the loop. Inside the loop, add each `note` to `total`. After the loop, print `total`. That turns the loop from repeated printing into repeated calculation.",
         },
         {
           id: "variables-and-types",
           title: "Add types when you want clearer rules",
           body: [
-            "A type says what kind of value is allowed. Entier means whole number, Texte means text, and Booléen means true-or-false.",
+            "A type says what kind of value is allowed. Entier means whole number, Texte means text, and Logique means true-or-false.",
             "Types help Lumière catch mistakes. If a function expects a number but receives text, Lumière can report the problem instead of continuing with the wrong value.",
           ],
           bullets: [
-            "Common scalar types include Entier, Décimal, Booléen, Texte, Rien, and Universel.",
+            "Common scalar types include Entier, Décimal, Logique, Texte, Rien, and Universel.",
             "Collection types include Liste[T], ListeFixe[T, N], Dictionnaire[K, V], and Ensemble[T].",
             "Décimal accepts Entier values where that is appropriate.",
             "Collections inside other collections are checked too.",
@@ -228,6 +448,38 @@ fonction principal() {
 
     retourne total / notes.taille()
 }`,
+          examples: [
+            {
+              title: "Read type annotations as promises",
+              body: "`nom: Texte` means this variable should hold text. `actif: Logique` means this variable should hold `vrai` or `faux`. The annotation documents intent and lets Lumière reject mismatches.",
+              code: `fonction principal() {
+    soit nom: Texte = "Ada"
+    soit age: Entier = 36
+    soit actif: Logique = vrai
+
+    afficher(nom)
+    afficher(age)
+    afficher(actif)
+}`,
+            },
+            {
+              title: "Type the function boundary",
+              body: "Function parameters are a boundary. If `totaliser` says it receives `Liste[Entier]`, callers should pass a list of whole numbers, not arbitrary values.",
+              code: `fonction totaliser(nombres: Liste[Entier]) -> Entier {
+    soit total: Entier = 0
+
+    pour chaque nombre dans nombres {
+        total = total + nombre
+    }
+
+    retourne total
+}
+
+fonction principal() {
+    afficher(totaliser([1, 2, 3]))
+}`,
+            },
+          ],
           note: "Copy this into a file, then add `principal` below it and call `moyenne([12, 15, 18])`. Next, try passing text instead of numbers to see how the type rule protects the function.",
         },
         {
@@ -252,44 +504,142 @@ fonction principal() {
         },
         {
           id: "collections",
-          title: "Collections are typed at the edges",
+          title: "Collections hold several values",
           body: [
-            "Lumière supports lists, fixed lists, dictionaries, and sets. Lists work well for ordered values; dictionaries work well when each value should be found by a key.",
-            "When a collection has a stated type, values added to it must match that type.",
+            "A collection is one value that contains several smaller values. Use a collection when a program needs to keep a group together: several names, several scores, several paths, or several settings.",
+            "The first choice is the shape of the group. Use a list when order matters. Use a dictionary when each value should be found by a key such as `nom`, `score`, or `langage`.",
+            "A typed collection adds a rule for what may go inside. `Liste[Entier]` means every item in the list should be an `Entier`. `Dictionnaire[Texte, Entier]` means every key should be `Texte` and every stored value should be `Entier`.",
           ],
           bullets: [
-            "Liste and ListeFixe can be iterated with `pour chaque`.",
-            "Liste, ListeFixe, Dictionnaire, and Texte support indexed reads.",
-            "Liste and ListeFixe support indexed mutation.",
-            "Dictionnaire keys and values are checked when a typed dictionary is mutated.",
+            "Use `Liste` for an ordered group whose size can change.",
+            "Use `ListeFixe` for an ordered group whose size is fixed.",
+            "Use `Dictionnaire` when a key should lead directly to a value.",
+            "Use `Ensemble` when membership matters more than order or duplicates.",
           ],
-          code: `fonction totaliser(nombres: Liste[Entier]) -> Entier {
-    soit total: Entier = 0
+          code: `fonction principal() {
+    soit notes: Liste[Entier] = [10, 12, 14]
+    soit total = 0
 
-    pour chaque nombre dans nombres {
-        total = total + nombre
+    pour chaque note dans notes {
+        total = total + note
     }
 
-    retourne total
+    afficher("total=" + total)
 }`,
-          note: "Use this as a pattern whenever a list must become one answer: start with an empty result, visit each item, update the result, then return it after the loop.",
+          examples: [
+            {
+              title: "Use a list when order matters",
+              body: "A list keeps values in order. Index `0` reads the first item, index `1` reads the second item, and so on.",
+              code: `fonction principal() {
+    soit noms = ["Ada", "Grace", "Camille"]
+
+    afficher(noms[0])
+    afficher(noms[1])
+    afficher("nombre=" + noms.taille())
+}`,
+            },
+            {
+              title: "Use a dictionary when names matter",
+              body: "A dictionary stores values behind keys. This is useful when you want to ask for `nom` or `langage` directly instead of remembering an index.",
+              code: `fonction principal() {
+    soit projet = {
+        "nom": "Lumière",
+        "langage": "C++"
+    }
+
+    afficher(projet["nom"])
+    afficher(projet["langage"])
+}`,
+            },
+            {
+              title: "Let the type catch a bad value",
+              body: "The type annotation is a rule for the whole collection. If a list is declared as `Liste[Entier]`, adding text to it is a mistake Lumière can report.",
+              code: `fonction principal() {
+    soit notes: Liste[Entier] = [10, 12, 14]
+
+    notes[0] = 20
+    afficher(notes[0])
+
+    // Then try this line:
+    // notes[1] = "absent"
+}`,
+            },
+          ],
+          note: "Do not start by memorizing every collection type. Start with `Liste` and `Dictionnaire`. When those feel natural, `ListeFixe` and `Ensemble` become easier to understand.",
         },
         {
           id: "control-flow",
-          title: "Control flow uses French keywords, familiar structure",
+          title: "Control flow chooses the path",
           body: [
-            "Lumière supports conditional blocks, while loops, foreach loops, loop control, returns, thrown values, try/catch/finally, and `agir selon`.",
-            "`agir selon` is useful when one value needs to be handled by several possible branches. The first matching branch runs; use `sinon` for the fallback case.",
+            "Control flow is the order in which a program runs. Most lines run from top to bottom, but some instructions change the path: a condition chooses one block, a loop repeats a block, and `retourne` leaves a function with an answer.",
+            "Start with simple paths before using advanced forms. Use `si` when there are two or three choices. Use `pour chaque` when the same action should happen for every value in a collection. Use `agir selon` when one value has several named cases.",
           ],
           bullets: [
-            "Supported patterns include exact values, `rien`, and typed names such as `n: Entier`.",
-            "A typed name creates a value that can be used inside the matching branch.",
-            "Use `sinon` when every possible value should be handled.",
+            "`si` asks a yes/no question and runs a block only when the answer is `vrai`.",
+            "`sinon` gives the program a fallback path when the `si` condition is `faux`.",
+            "`pour chaque` repeats a block once for each value in a collection.",
+            "`retourne` stops the current function immediately and sends a value back to the caller.",
           ],
-          code: `fonction etiquette(tags: Liste[Texte]) -> Texte {
+          code: `fonction prix_livraison(total: Décimal) -> Décimal {
+    si (total >= 50.0) {
+        retourne 0.0
+    }
+
+    retourne 7.5
+}
+
+fonction principal() {
+    afficher(prix_livraison(80.0))
+    afficher(prix_livraison(20.0))
+}`,
+          examples: [
+            {
+              title: "Choose between several messages",
+              body: "The conditions are tested from top to bottom. The first true condition wins. If none of them is true, the final `sinon` block runs.",
+              code: `fonction message_temperature(degres: Entier) -> Texte {
+    si (degres < 0) {
+        retourne "gel"
+    } sinon si (degres < 20) {
+        retourne "frais"
+    } sinon {
+        retourne "chaud"
+    }
+}
+
+fonction principal() {
+    afficher(message_temperature(-4))
+    afficher(message_temperature(12))
+    afficher(message_temperature(28))
+}`,
+            },
+            {
+              title: "Stop searching when you find the answer",
+              body: "`retourne` can end a loop early because the function is finished. Here the function stops as soon as it finds the searched name.",
+              code: `fonction contient_nom(noms: Liste[Texte], cherche: Texte) -> Logique {
+    pour chaque nom dans noms {
+        si (nom == cherche) {
+            retourne vrai
+        }
+    }
+
+    retourne faux
+}
+
+fonction principal() {
+    afficher(contient_nom(["Ada", "Grace"], "Grace"))
+    afficher(contient_nom(["Ada", "Grace"], "Camille"))
+}`,
+            },
+            {
+              title: "Use agir selon for named cases",
+              body: "`agir selon` keeps several cases organized around one value. Use it when the program is not just asking yes/no, but deciding what a specific value means.",
+              code: `fonction etiquette(tags: Liste[Texte]) -> Texte {
     agir selon tags.taille() {
         0 -> {
-            retourne "vide"
+            retourne "aucun tag"
+        }
+        1 -> {
+            retourne "un tag"
         }
         n: Entier -> {
             retourne "tags=" + n
@@ -299,6 +649,9 @@ fonction principal() {
         }
     }
 }`,
+            },
+          ],
+          note: "When control flow is hard to follow, write down the values and trace which branch runs. Do not guess; follow the conditions in order.",
         },
         {
           id: "expression-reference",
@@ -337,6 +690,33 @@ importer Salutations.{saluer}
 fonction principal() {
     afficher(saluer("Ada"))
 }`,
+          examples: [
+            {
+              title: "Keep a helper in another file",
+              body: "Create `Calculs.lum` for reusable calculations, then import only the public function you need from `programme.lum`.",
+              code: `// Calculs.lum
+public fonction doubler(nombre: Entier) -> Entier {
+    retourne nombre * 2
+}
+
+// programme.lum
+importer Calculs.{doubler}
+
+fonction principal() {
+    afficher(doubler(21))
+}`,
+            },
+            {
+              title: "Import a module as a namespace",
+              body: "A namespace import keeps the module name in front of the function call. This is useful when the helper comes from a larger module.",
+              code: `importer Maths
+
+fonction principal() {
+    soit racine = Maths.racine(81)
+    afficher(racine)
+}`,
+            },
+          ],
           note: "This example uses two files. Put them in the same folder, run `lumiere programme.lum`, then remove `public` from Salutations.lum and run again. That failure shows why exported names must be explicit.",
         },
         {
@@ -369,28 +749,113 @@ fonction principal() {
         },
         {
           id: "objects",
-          title: "Classes, inheritance, and interfaces",
+          title: "Classes group data with behavior",
           body: [
-            "Lumière supports class declarations, object construction, fields, methods, inheritance, and interfaces.",
-            "Use `ici` for the current receiver and `parent` for parent-method dispatch. A class can declare that it `réalise` one or more interfaces.",
+            "A class is a plan for making objects. Use a class when several values belong together and you also want functions that work with those values.",
+            "Fields are the values stored on the object. Methods are functions attached to the object. Inside a method, `ici` means the object currently receiving the method call.",
+            "Inheritance and interfaces are for larger programs. Inheritance lets one class reuse fields and methods from another class. An interface describes methods a class must provide.",
           ],
           bullets: [
-            "`privé` is supported on class fields, not on top-level declarations.",
-            "`remplace` can be used for methods that override inherited behavior.",
-            "Interfaces describe functions a class is expected to provide.",
+            "Create an object by calling the class name, such as `Personne(nom: \"Ada\", age: 36)`.",
+            "Read a field with `objet.champ`, such as `p.nom`.",
+            "Call a method with `objet.methode()`, such as `p.saluer()`.",
+            "Use `privé` on a field when outside code should not read it directly.",
           ],
-          code: `interface Presentable {
-    fonction presenter()
+          code: `classe Personne {
+    nom: Texte
+    age: Entier
+
+    fonction saluer() {
+        afficher("Bonjour " + ici.nom)
+    }
+}
+
+fonction principal() {
+    soit p = Personne(nom: "Ada", age: 36)
+
+    afficher(p.nom)
+    afficher(p.age)
+    p.saluer()
+}`,
+          examples: [
+            {
+              title: "Put related values in one object",
+              body: "Without a class, `nom` and `age` are separate variables. With a class, they travel together as one `Personne` value.",
+              code: `classe Personne {
+    nom: Texte
+    age: Entier
+}
+
+fonction principal() {
+    soit ada = Personne(nom: "Ada", age: 36)
+    soit grace = Personne(nom: "Grace", age: 85)
+
+    afficher(ada.nom)
+    afficher(grace.nom)
+}`,
+            },
+            {
+              title: "Use ici inside a method",
+              body: "`ici.nom` means the `nom` field on the object that received the method call. The same method works for both objects because `ici` changes with the receiver.",
+              code: `classe Personne {
+    nom: Texte
+
+    fonction presentation() -> Texte {
+        retourne "Je suis " + ici.nom
+    }
+}
+
+fonction principal() {
+    soit ada = Personne(nom: "Ada")
+    soit grace = Personne(nom: "Grace")
+
+    afficher(ada.presentation())
+    afficher(grace.presentation())
+}`,
+            },
+            {
+              title: "Reuse behavior with inheritance",
+              body: "`Chien : Animal` means a `Chien` has the fields and methods declared on `Animal`. The child class can add its own fields.",
+              code: `classe Animal {
+    nom: Texte
+
+    fonction decrire() {
+        afficher("Animal: " + ici.nom)
+    }
+}
+
+classe Chien : Animal {
+    race: Texte
+}
+
+fonction principal() {
+    soit c = Chien(nom: "Rex", race: "Berger")
+    afficher(c.race)
+    c.decrire()
+}`,
+            },
+            {
+              title: "Use an interface for an expected method",
+              body: "An interface is a promise about behavior. `Rapport réalise Presentable` means `Rapport` must provide the method required by `Presentable`.",
+              code: `interface Presentable {
+    fonction presenter() -> Texte
 }
 
 classe Rapport réalise Presentable {
     titre: Texte
 
-    fonction presenter() {
-        retourne "rapport:" + ici.titre
+    fonction presenter() -> Texte {
+        retourne "rapport: " + ici.titre
     }
+}
+
+fonction principal() {
+    soit rapport = Rapport(titre: "Alpha")
+    afficher(rapport.presenter())
 }`,
-          note: "Treat this section as a map before writing object-heavy code. Start with functions and data first; introduce a class when several values and the functions that use them clearly belong together.",
+            },
+          ],
+          note: "Do not start every program with classes. Start with variables and functions. Introduce a class when a group of values keeps appearing together and the same operations belong with that group.",
         },
         {
           id: "shell-and-tests",
@@ -410,24 +875,17 @@ lumiere tester tests --filtre "nom du test"`,
         },
         {
           id: "testing-with-lumitest",
-          title: "Testing with LumiTest",
+          title: "Testing means checking behavior on purpose",
           body: [
-            "LumiTest is the built-in test module. Test files import LumiTest explicitly, then declare tests with LumiTest.test or grouped tests with LumiTest.groupe.",
-            "Hooks run inside groups. `avant_tout` and `après_tout` run once for a group that actually executes tests. `avant_chaque` and `après_chaque` wrap each test in scope, including nested groups.",
+            "A test is a small program that checks another piece of code. Instead of running your program, looking at the output, and deciding by eye whether it is correct, a test states the expected result directly in code.",
+            "Testing matters because programs change. You may improve a function today and accidentally break something that worked yesterday. A good test catches that break immediately.",
+            "In Lumière, tests use the built-in `LumiTest` module. A test has a name, some code to run, and one or more checks such as `vérifier_égal`.",
           ],
           refs: [
-            { term: "LumiTest.test(name, function)", description: "Declare one test case." },
-            { term: "LumiTest.groupe(name, function)", description: "Group related tests and create a nested name such as Parent > Child > case." },
-            { term: "LumiTest.avant_tout(function)", description: "Register a before-all hook for the current group." },
-            { term: "LumiTest.avant_chaque(function)", description: "Register a before-each hook for the current group." },
-            { term: "LumiTest.après_chaque(function)", description: "Register an after-each hook for the current group." },
-            { term: "LumiTest.après_tout(function)", description: "Register an after-all hook for the current group." },
-            { term: "LumiTest.vérifier(value, message?)", description: "Passes when the value is neither rien nor false." },
-            { term: "LumiTest.vérifier_égal(expected, received, message?)", description: "Compare two values with Lumière equality." },
-            { term: "LumiTest.vérifier_différent(a, b, message?)", description: "Passes when two values are not equal." },
-            { term: "LumiTest.vérifier_lance(function, message?)", description: "Passes when the function raises an error." },
-            { term: "LumiTest.vérifier_contient(container, element, message?)", description: "Checks containment for text, lists, sets, and dictionaries." },
-            { term: "LumiTest.vérifier_approx(expected, received, tolerance, message?)", description: "Compare numeric values with an absolute tolerance." },
+            { term: "Arrange", description: "Create the values the test needs." },
+            { term: "Act", description: "Call the function or run the operation being tested." },
+            { term: "Assert", description: "Check the result with `LumiTest.vérifier`, `vérifier_égal`, or another assertion." },
+            { term: "Failure", description: "A useful failure tells you which behavior changed and what result was expected." },
           ],
           code: `importer LumiTest
 
@@ -435,18 +893,93 @@ fonction additionner(a: Entier, b: Entier) -> Entier {
     retourne a + b
 }
 
-LumiTest.groupe("Calculs", fonction() {
-    LumiTest.test("addition", fonction() {
-        LumiTest.vérifier_égal(5, additionner(2, 3))
+LumiTest.test("additionne deux nombres", fonction() {
+    soit resultat = additionner(2, 3)
+
+    LumiTest.vérifier_égal(5, resultat)
+})`,
+          examples: [
+            {
+              title: "Start with the smallest useful test",
+              body: "This test checks one behavior: adding two whole numbers. The function may be rewritten later, but the behavior should stay the same.",
+              code: `importer LumiTest
+
+fonction additionner(a: Entier, b: Entier) -> Entier {
+    retourne a + b
+}
+
+LumiTest.test("2 + 3 donne 5", fonction() {
+    LumiTest.vérifier_égal(5, additionner(2, 3))
+})`,
+            },
+            {
+              title: "Make the failure teach you something",
+              body: "Run this test once as written. Then change `5` to `6` and run it again. The failure shows that the test is actually checking the result.",
+              code: `importer LumiTest
+
+fonction doubler(nombre: Entier) -> Entier {
+    retourne nombre * 2
+}
+
+LumiTest.test("double 4", fonction() {
+    LumiTest.vérifier_égal(8, doubler(4))
+})`,
+            },
+            {
+              title: "Test behavior, not implementation",
+              body: "The test does not care how `est_pair` is written. It only states examples that must remain true.",
+              code: `importer LumiTest
+
+fonction est_pair(nombre: Entier) -> Logique {
+    retourne nombre % 2 == 0
+}
+
+LumiTest.test("nombres pairs", fonction() {
+    LumiTest.vérifier(est_pair(2))
+    LumiTest.vérifier(est_pair(10))
+    LumiTest.vérifier_égal(faux, est_pair(3))
+})`,
+            },
+            {
+              title: "Group related cases",
+              body: "A group gives several tests a shared name. Use groups when a function has several important cases, such as normal input, empty input, and edge cases.",
+              code: `importer LumiTest
+
+fonction saluer(nom: Texte) -> Texte {
+    retourne "Bonjour, " + nom
+}
+
+LumiTest.groupe("Salutations", fonction() {
+    LumiTest.test("nom simple", fonction() {
+        LumiTest.vérifier_égal("Bonjour, Ada", saluer("Ada"))
     })
 
-    LumiTest.test("erreur attendue", fonction() {
-        LumiTest.vérifier_lance(fonction() {
-            lancer "échec volontaire"
-        })
+    LumiTest.test("nom vide", fonction() {
+        LumiTest.vérifier_égal("Bonjour, ", saluer(""))
     })
 })`,
-          note: "Make the addition test fail on purpose by changing `5` to `6`, run `lumiere tester tests`, then change it back. A test is only useful if you have seen what its failure looks like.",
+            },
+            {
+              title: "Check that an error is intentional",
+              body: "Some functions are supposed to reject bad input. `vérifier_lance` checks that the code inside the anonymous function raises an error.",
+              code: `importer LumiTest
+
+fonction diviser(a: Entier, b: Entier) -> Entier {
+    si (b == 0) {
+        lancer "division par zéro"
+    }
+
+    retourne a / b
+}
+
+LumiTest.test("refuse la division par zéro", fonction() {
+    LumiTest.vérifier_lance(fonction() {
+        diviser(10, 0)
+    })
+})`,
+            },
+          ],
+          note: "Put tests in a `tests` folder and run them with `lumiere tester tests`. Write tests for behavior you would be annoyed to break accidentally.",
         },
         {
           id: "stdlib-in-practice",
@@ -507,6 +1040,40 @@ fonction principal() {
     afficher("racine de 81=" + Maths.racine(81))
     afficher("4 est pair=" + Maths.est_pair(4))
 }`,
+          examples: [
+            {
+              title: "Choose the right rounding helper",
+              body: "Rounding helpers answer different questions. Use `plancher` when you need the lower whole value, `plafond` when you need the upper whole value, and `arrondir` when you need the nearest whole value.",
+              code: `importer Maths
+
+fonction principal() {
+    soit prix = 12.75
+
+    afficher(Maths.plancher(prix))
+    afficher(Maths.plafond(prix))
+    afficher(Maths.arrondir(prix))
+}`,
+            },
+            {
+              title: "Guard a calculation before calling it",
+              body: "`Maths.racine` expects a non-negative number. Check the value first when it may come from a user, a file, or another calculation.",
+              code: `importer Maths
+
+fonction afficher_racine(nombre: Décimal) {
+    si (nombre < 0.0) {
+        afficher("racine impossible")
+        retourne
+    }
+
+    afficher(Maths.racine(nombre))
+}
+
+fonction principal() {
+    afficher_racine(81.0)
+    afficher_racine(-4.0)
+}`,
+            },
+          ],
           note: "Change `rayon` to 10 and predict the new area before running. Trigonometry helpers such as sin, cos, and tan use radians. Convert degrees with degres_vers_radians before using them.",
         },
         {
@@ -547,6 +1114,31 @@ fonction principal() {
     afficher(age + 1)
     afficher(Texte.joindre([prenom, nom], " "))
 }`,
+          examples: [
+            {
+              title: "Clean input before using it",
+              body: "Extra spaces are common in copied text and typed input. Clean first, then compare or convert.",
+              code: `fonction principal() {
+    soit reponse = "  oui  "
+    soit propre = reponse.elaguer()
+
+    afficher(propre)
+    afficher(propre == "oui")
+}`,
+            },
+            {
+              title: "Split only after choosing a separator",
+              body: "`separer` turns one text value into a list. After splitting, check the list size before assuming every piece exists.",
+              code: `fonction principal() {
+    soit ligne = "Ada;36;Lumière"
+    soit morceaux = ligne.separer(";")
+
+    afficher("morceaux=" + morceaux.taille())
+    afficher(morceaux[0])
+    afficher(morceaux[1].en_entier())
+}`,
+            },
+          ],
           note: "Change `ligne` to `Grace,Hopper,85` without surrounding spaces and run again. Then remove one comma and observe why checking `morceaux.taille()` matters before reading indexes.",
         },
         {
@@ -582,6 +1174,34 @@ fonction principal() {
     afficher(Chemin.extension(source))
     afficher(Chemin.dossier(source))
 }`,
+          examples: [
+            {
+              title: "Build paths from pieces",
+              body: "When a path is made of several pieces, use `Chemin.joindre`. The code says which pieces matter without forcing you to hand-write separators.",
+              code: `importer Chemin
+
+fonction principal() {
+    soit dossier = Chemin.joindre("journal", "2026")
+    soit fichier = Chemin.joindre(dossier, "juillet.txt")
+
+    afficher(fichier)
+    afficher(Chemin.dossier(fichier))
+}`,
+            },
+            {
+              title: "Inspect a path before using it",
+              body: "Chemin helps you ask questions about path text. This is useful before a program decides whether to accept a filename.",
+              code: `importer Chemin
+
+fonction principal() {
+    soit fichier = "notes/bonjour.lum"
+
+    afficher(Chemin.nom(fichier))
+    afficher(Chemin.nom_sans_extension(fichier))
+    afficher(Chemin.extension(fichier))
+}`,
+            },
+          ],
           note: "Add `afficher(Chemin.absolu(source))` and compare the relative path with the absolute one. Chemin returns normalized path text; it does not create, read, or delete anything.",
         },
         {
@@ -626,6 +1246,41 @@ fonction principal() {
     afficher(lignes[0])
     afficher(Fichier.est_fichier(chemin))
 }`,
+          examples: [
+            {
+              title: "Write, then read back",
+              body: "The safest first file program writes to a folder made for practice, then immediately reads the same file back.",
+              code: `importer Chemin
+importer Fichier
+
+fonction principal() {
+    soit dossier = "atelier-fichiers"
+    soit fichier = Chemin.joindre(dossier, "message.txt")
+
+    si (non Fichier.existe(dossier)) {
+        Fichier.creer_dossiers(dossier)
+    }
+
+    Fichier.ecrire_texte(fichier, "Bonjour")
+    afficher(Fichier.lire_texte(fichier))
+}`,
+            },
+            {
+              title: "Append when history matters",
+              body: "`ecrire_texte` replaces content. `ajouter_texte` appends content. Use append for logs, journals, and accumulated records.",
+              code: `importer Chemin
+importer Fichier
+
+fonction principal() {
+    soit fichier = Chemin.joindre("atelier-fichiers", "journal.txt")
+
+    Fichier.ecrire_texte(fichier, "début\\n")
+    Fichier.ajouter_texte(fichier, "suite\\n")
+
+    afficher(Fichier.lire_texte(fichier))
+}`,
+            },
+          ],
           note: "After the first run, open `atelier-fichiers/notes.txt` in VS Code. Then change the list to four lines and run again. `supprimer_arbre` removes a folder tree recursively; use it only with paths your program created intentionally.",
         },
         {
@@ -662,6 +1317,32 @@ fonction principal() {
     afficher(fin.formater("HH:mm:ss"))
     afficher(duree.en_minutes())
 }`,
+          examples: [
+            {
+              title: "Format the same instant in different ways",
+              body: "Formatting does not change the instant. It only changes how the instant is shown to the reader.",
+              code: `importer Temps
+
+fonction principal() {
+    soit instant = Temps.depuis_horodatage(1704078245123)
+
+    afficher(instant.formater("AAAA-MM-JJ"))
+    afficher(instant.formater("HH:mm:ss"))
+}`,
+            },
+            {
+              title: "Add a duration to plan a later time",
+              body: "Use durations for amounts of time. Add a duration to an instant when you want a future instant.",
+              code: `importer Temps
+
+fonction principal() {
+    soit debut = Temps.depuis_horodatage(1704078245123)
+    soit fin = debut.ajouter(Temps.heures(2))
+
+    afficher(fin.formater("HH:mm:ss"))
+}`,
+            },
+          ],
           note: "Change `Temps.minutes(90)` to `Temps.heures(2)` and predict the formatted end time. Temps.attendre pauses the program for a positive Durée; keep examples short so the program does not look frozen.",
         },
         {
@@ -699,37 +1380,74 @@ fonction principal() {
     afficher("dé=" + lancer)
     afficher(main.joindre(", "))
 }`,
+          examples: [
+            {
+              title: "Roll several dice",
+              body: "`entier(1, 6)` includes both 1 and 6. This makes it a direct model for a standard die.",
+              code: `importer Aléatoire
+
+fonction principal() {
+    Aléatoire.graine(7)
+
+    afficher(Aléatoire.entier(1, 6))
+    afficher(Aléatoire.entier(1, 6))
+    afficher(Aléatoire.entier(1, 6))
+}`,
+            },
+            {
+              title: "Choose from a list",
+              body: "Use `choisir` when the possible values are already in a list. The list must not be empty.",
+              code: `importer Aléatoire
+
+fonction principal() {
+    Aléatoire.graine(3)
+
+    soit couleurs = ["rouge", "vert", "bleu"]
+    afficher(Aléatoire.choisir(couleurs))
+}`,
+            },
+          ],
           note: "Run this several times with the same seed: the result should repeat. Then remove `Aléatoire.graine(42)` and run again. The accentless module name Aleatoire is also accepted.",
         },
         {
           id: "stdlib-luminet",
-          title: "LumiNet: network programs, step by step",
+          title: "LumiNet: addresses, HTTP, sockets, and live channels",
           body: [
-            "LumiNet is for programs that communicate over the network. It is more advanced than the other modules because success can depend on ports, firewalls, DNS, local services, and whether networking support was enabled in the build.",
-            "Learn it in layers. Start with addresses and DNS. Then make an HTTP request. Only then move to TCP, UDP, HTTP servers, or Canal connections.",
-            "A good network program has timeouts and clear failure messages. Without a timeout, a beginner can mistake a slow network for a broken program.",
+            "LumiNet is the standard module for programs that talk to other programs. It covers the usual layers: addresses, DNS, HTTP requests, HTTP servers, raw TCP streams, UDP datagrams, and Canal connections for ongoing message exchange.",
+            "Network code is different from local code because another machine, service, firewall, port, or DNS record can decide the outcome. A correct Lumière program can still fail if the address is wrong, the server is down, the port is already in use, or the current build was compiled without LumiNet support.",
+            "Learn LumiNet from the safest layer to the most demanding one: validate addresses, resolve names, make one HTTP request, write a small HTTP handler, then use TCP, UDP, or Canal when HTTP is not the right shape for the job.",
           ],
           bullets: [
-            "Use `LumiNet.Adresse` for local validation before opening sockets.",
-            "Use `LumiNet.DNS` when you need to turn a host name into an IP address before explaining or logging a connection.",
-            "Use HTTP helpers for request/response programs. The response exposes `statut`, `corps`, `succès`, `entête(name)`, and `entêtes()`.",
-            "Use TCP/UDP only when the protocol you are speaking is not HTTP.",
-            "Use Canal when you need ongoing message exchange rather than one request and one response.",
+            "Use `LumiNet.Adresse` before opening a connection when you want to validate text such as `127.0.0.1:8080`, split the host from the port, or check whether an address is local.",
+            "Use `LumiNet.DNS` when a user gives you a name like `localhost` and you need the address that the network stack will actually try.",
+            "Use `LumiNet.HTTP` for ordinary request/response work: fetching a page, calling a local service, sending a small payload, or checking status and headers.",
+            "Use `LumiNet.HTTP.Serveur` when Lumière should answer HTTP requests. Routes can read path parameters, query values, request headers, and request bodies.",
+            "Use `LumiNet.TCP` for stream protocols where both sides keep a connection open and read/write text or bytes.",
+            "Use `LumiNet.UDP` for datagrams: small independent packets, broadcast, discovery, or cases where losing a packet is acceptable.",
+            "Use `LumiNet.Canal` when the program needs ongoing messages over a WebSocket-style connection instead of a single HTTP response.",
           ],
           refs: [
-            { term: "LumiNet.Adresse", description: "Parse host:port text, check IPv4/IPv6/local addresses, and ask for a local address." },
-            { term: "LumiNet.DNS", description: "Resolve host names to addresses, resolve all addresses, or reverse-resolve an IP address." },
-            { term: "LumiNet.HTTP.obtenir(url)", description: "Send an HTTP GET request. The current client supports plain http URLs." },
-            { term: "LumiNet.HTTP.créer / modifier / supprimer", description: "Send POST, PUT, or DELETE requests. Named arguments include corps, type, entêtes/entetes, and délai/delai." },
-            { term: "LumiNet.TCP.connecter(host, port, délai?)", description: "Open a TCP client connection and read/write text or bytes." },
-            { term: "LumiNet.UDP.ouvrir(port?)", description: "Open a UDP socket, send datagrams, receive datagrams, or broadcast." },
-            { term: "LumiNet.HTTP.Serveur / LumiNet.Canal.Serveur", description: "Create local HTTP or channel servers with route/callback functions." },
+            { term: "LumiNet.Adresse.analyser(texte)", description: "Parses `host:port` text and returns an object with `hôte`, `port`, and `en_texte()`." },
+            { term: "LumiNet.Adresse.est_valide / est_ipv4 / est_ipv6 / est_locale", description: "Answers address questions before the program tries to connect." },
+            { term: "LumiNet.Adresse.locale()", description: "Returns a local address object. Useful for diagnostics and local tools." },
+            { term: "LumiNet.DNS.résoudre / résoudre_tous / résoudre_inverse", description: "Resolves one address, all addresses, or the name associated with an IP address." },
+            { term: "délai / delai", description: "Optional timeout argument for supported client operations. It is a Durée value, commonly created with `Temps.secondes(...)`." },
+            { term: "LumiNet.HTTP.obtenir / créer / modifier / supprimer", description: "Sends GET, POST, PUT, or DELETE requests. Named arguments include `corps`, `type`, `entêtes`/`entetes`, and `délai`/`delai`." },
+            { term: "RéponseHTTP", description: "HTTP client responses expose `statut`, `corps`, `succès`, `entête(nom)`, and `entêtes()`." },
+            { term: "LumiNet.HTTP.Serveur()", description: "Creates a server with `OBTENIR`, `CRÉER`, `MODIFIER`, `SUPPRIMER`, `avant`, `canal`, `écouter`, and `arrêter`/`arreter`." },
+            { term: "RequêteHTTP", description: "Server handlers receive a request object with `méthode`, `chemin`, `corps`, `paramètre(nom)`, `requête(nom, défaut?)`, `entête(nom)`, and `entêtes()`." },
+            { term: "RéponseServeurHTTP", description: "Server handlers answer with `envoyer`, `envoyer_json`, `envoyer_fichier`, `rediriger`, and `définir_entête`." },
+            { term: "LumiNet.TCP.connecter / LumiNet.TCP.Serveur", description: "Opens TCP clients or servers. Connections support `écrire`, `écrire_octets`, `lire`, `lire_ligne`, `lire_octets`, `définir_délai`, `est_connecté`, and `fermer`." },
+            { term: "LumiNet.UDP.ouvrir(port?)", description: "Opens a UDP socket. Sockets support `envoyer`, `envoyer_octets`, `diffuser`, `recevoir`, `recevoir_octets`, `définir_délai`, and `fermer`." },
+            { term: "LumiNet.Canal.connecter / LumiNet.Canal.Serveur", description: "Creates WebSocket-style clients or servers with callbacks for opening, messages, disconnection, and errors." },
           ],
           code: `importer LumiNet
 importer Temps
 
 fonction principal() {
-    afficher(LumiNet.Adresse.est_locale("127.0.0.1"))
+    soit adresse = LumiNet.Adresse.analyser("127.0.0.1:8080")
+    afficher(adresse.hôte)
+    afficher(adresse.port)
 
     soit réponse = LumiNet.HTTP.obtenir(
         "http://example.com",
@@ -739,7 +1457,287 @@ fonction principal() {
     afficher(réponse.statut)
     afficher(réponse.succès)
 }`,
-          note: "Run the address line first if you are learning offline. Add the HTTP request only when you have a network connection. Network failures are different from Lumière syntax errors.",
+          examples: [
+            {
+              title: "Check and parse addresses before connecting",
+              body: "This is the first LumiNet habit to build. It separates mistakes in a user-provided address from real connection failures.",
+              code: `importer LumiNet
+
+fonction principal() {
+    soit adresse = LumiNet.Adresse.analyser("127.0.0.1:8080")
+
+    afficher(adresse.hôte)
+    afficher(adresse.port)
+    afficher(adresse.en_texte())
+
+    afficher(LumiNet.Adresse.est_valide("127.0.0.1"))
+    afficher(LumiNet.Adresse.est_ipv4("127.0.0.1"))
+    afficher(LumiNet.Adresse.est_ipv6("::1"))
+    afficher(LumiNet.Adresse.est_locale("127.0.0.1"))
+}`,
+            },
+            {
+              title: "Resolve a name before explaining a connection",
+              body: "`localhost` is a name. DNS resolution answers which address the system maps it to. Use this when your program needs to show the destination it will try.",
+              code: `importer LumiNet
+
+fonction principal() {
+    soit ip = LumiNet.DNS.résoudre("localhost")
+    afficher(ip)
+
+    soit adresses = LumiNet.DNS.résoudre_tous("localhost")
+    afficher(adresses.taille())
+
+    soit nom = LumiNet.DNS.résoudre_inverse("127.0.0.1")
+    afficher(nom)
+}`,
+            },
+            {
+              title: "Understand `délai` before using network calls",
+              body: "`délai` means timeout: the maximum time the operation should wait. It is optional, but it is useful while learning because a missing server can otherwise make the program look frozen.",
+              code: `importer LumiNet
+importer Temps
+
+fonction principal() {
+    soit sans_délai = LumiNet.HTTP.obtenir("http://example.com")
+
+    soit avec_délai = LumiNet.HTTP.obtenir(
+        "http://example.com",
+        délai: Temps.secondes(2)
+    )
+
+    afficher(sans_délai.statut)
+    afficher(avec_délai.statut)
+}`,
+            },
+            {
+              title: "Treat HTTP as request, status, headers, and body",
+              body: "An HTTP response is not just text. `statut` tells you what happened, `succès` is true for 2xx statuses, `corps` is the response body, and `entête` reads one header.",
+              code: `importer LumiNet
+importer Temps
+
+fonction principal() {
+    soit réponse = LumiNet.HTTP.obtenir(
+        "http://example.com",
+        délai: Temps.secondes(2)
+    )
+
+    afficher(réponse.statut)
+    afficher(réponse.succès)
+    afficher(réponse.entête("Content-Type"))
+
+    si (réponse.succès) {
+        afficher(réponse.corps)
+    } sinon {
+        afficher("La requête a échoué.")
+    }
+}`,
+            },
+            {
+              title: "Send a small HTTP payload",
+              body: "`créer` sends POST, `modifier` sends PUT, and `supprimer` sends DELETE. Use `corps` for the payload and `type` for the `Content-Type` header.",
+              code: `importer LumiNet
+importer Temps
+
+fonction principal() {
+    soit réponse = LumiNet.HTTP.créer(
+        "http://127.0.0.1:8080/messages",
+        corps: "bonjour",
+        type: "text/plain",
+        délai: Temps.secondes(2)
+    )
+
+    afficher(réponse.statut)
+    afficher(réponse.succès)
+}`,
+            },
+            {
+              title: "Write a small HTTP server",
+              body: "A route handler receives a request and a response writer. Path parameters come from `:nom`; query values come from the part after `?`; headers come from the request.",
+              code: `importer LumiNet
+
+fonction bonjour(req: Universel, rep: Universel) {
+    soit nom = req.paramètre("nom")
+    soit ton = req.requête("ton", "simple")
+
+    rep.définir_entête("X-Lumiere", "ok")
+    rep.envoyer(200, "Bonjour " + nom + " (" + ton + ")")
+}
+
+fonction principal() {
+    soit serveur = LumiNet.HTTP.Serveur()
+    serveur.OBTENIR("/bonjour/:nom", bonjour)
+    serveur.écouter("127.0.0.1", 8080)
+}`,
+            },
+            {
+              title: "Use middleware for shared HTTP work",
+              body: "`avant` registers a function that runs before the route handler. The third parameter, often named `suivant`, continues to the next step. This is useful for headers or logging that should apply to several routes.",
+              code: `importer LumiNet
+
+fonction ajouter_entête(req: Universel, rep: Universel, suivant: Universel) {
+    rep.définir_entête("X-Outil", "lumiere")
+    suivant()
+}
+
+fonction statut(req: Universel, rep: Universel) {
+    rep.envoyer_json(200, "{\\"statut\\":\\"ok\\"}")
+}
+
+fonction principal() {
+    soit serveur = LumiNet.HTTP.Serveur()
+    serveur.avant(ajouter_entête)
+    serveur.OBTENIR("/statut", statut)
+    serveur.écouter("127.0.0.1", 8080)
+}`,
+            },
+            {
+              title: "Redirect or serve a file from an HTTP handler",
+              body: "The response writer has different response shapes. Use `rediriger` when the client should request another URL. Use `envoyer_fichier` when a regular file should become the response body; LumiNet chooses a content type from the file extension.",
+              code: `importer LumiNet
+
+fonction accueil(req: Universel, rep: Universel) {
+    rep.rediriger("/index.html")
+}
+
+fonction page(req: Universel, rep: Universel) {
+    rep.envoyer_fichier(200, "site/index.html")
+}
+
+fonction principal() {
+    soit serveur = LumiNet.HTTP.Serveur()
+    serveur.OBTENIR("/", accueil)
+    serveur.OBTENIR("/index.html", page)
+    serveur.écouter("127.0.0.1", 8080)
+}`,
+            },
+            {
+              title: "Use TCP when you need a stream",
+              body: "TCP is a continuous connection. One side writes bytes or text; the other side reads from the same stream. Add a delay when a read should not wait forever.",
+              code: `importer LumiNet
+importer Temps
+
+fonction principal() {
+    soit connexion = LumiNet.TCP.connecter(
+        "127.0.0.1",
+        9000,
+        délai: Temps.secondes(2)
+    )
+
+    connexion.écrire("bonjour\\n")
+    afficher(connexion.est_connecté())
+    connexion.fermer()
+}`,
+            },
+            {
+              title: "Write a TCP echo server",
+              body: "A TCP server needs a `quand_connexion` callback before it can listen. The callback receives a connection object. This example reads one line, writes one answer, and closes that connection.",
+              code: `importer LumiNet
+importer Temps
+
+fonction répondre(connexion: Universel) {
+    connexion.définir_délai(Temps.secondes(10))
+
+    soit ligne = connexion.lire_ligne()
+    connexion.écrire("écho:" + ligne + "\\n")
+    connexion.fermer()
+}
+
+fonction principal() {
+    soit serveur = LumiNet.TCP.Serveur()
+    serveur.quand_connexion(répondre)
+    serveur.écouter("127.0.0.1", 9000)
+}`,
+            },
+            {
+              title: "Use UDP when each message is its own packet",
+              body: "UDP does not create a connection. You open a socket, send a datagram, and receive datagrams that include their sender address and port. Set a delay before receiving.",
+              code: `importer LumiNet
+importer Temps
+
+fonction principal() {
+    soit socket = LumiNet.UDP.ouvrir(9001)
+    socket.définir_délai(Temps.secondes(2))
+
+    socket.envoyer("salut", "127.0.0.1", 9001)
+
+    soit paquet = socket.recevoir()
+    afficher(paquet.données)
+    afficher(paquet.adresse)
+    afficher(paquet.port)
+
+    socket.fermer()
+}`,
+            },
+            {
+              title: "Send UDP bytes or broadcast text",
+              body: "`envoyer_octets` and `recevoir_octets` are for protocols that work with raw byte values. `diffuser` sends a text datagram to the broadcast address on a port.",
+              code: `importer LumiNet
+importer Temps
+
+fonction principal() {
+    soit socket = LumiNet.UDP.ouvrir()
+    socket.définir_délai(Temps.secondes(2))
+
+    socket.envoyer_octets([76, 85, 77], "127.0.0.1", 9001)
+    socket.diffuser("lumiere?", 9001)
+
+    socket.fermer()
+}`,
+            },
+            {
+              title: "Use Canal for ongoing messages",
+              body: "Canal is for WebSocket-style exchange. The client registers callbacks, sends a message, then waits so incoming messages can be delivered to `quand_message`.",
+              code: `importer LumiNet
+
+fonction reçu(message: Universel) {
+    afficher(message)
+}
+
+fonction principal() {
+    soit canal = LumiNet.Canal.connecter("ws://127.0.0.1:8080/chat")
+    canal.quand_message(reçu)
+    canal.envoyer("salut")
+    canal.attendre()
+}`,
+            },
+            {
+              title: "Write a Canal server",
+              body: "A Canal server is organized around callbacks. `quand_connexion` runs when a client arrives; `quand_message` runs each time a text message arrives; `quand_déconnexion` and `quand_erreur` are available for lifecycle handling.",
+              code: `importer LumiNet
+
+fonction sur_connexion(client: Universel) {
+    client.envoyer("bienvenue")
+}
+
+fonction sur_message(client: Universel, message: Universel) {
+    client.envoyer("écho:" + message)
+}
+
+fonction principal() {
+    soit serveur = LumiNet.Canal.Serveur()
+    serveur.quand_connexion(sur_connexion)
+    serveur.quand_message(sur_message)
+    serveur.écouter("127.0.0.1", 8081)
+}`,
+            },
+            {
+              title: "Upgrade an HTTP route to Canal",
+              body: "`LumiNet.HTTP.Serveur` can also expose a Canal route with `canal`. Use this when the same local server should answer ordinary HTTP routes and WebSocket-style message routes.",
+              code: `importer LumiNet
+
+fonction canal_ouvert(client: Universel) {
+    client.envoyer("prêt")
+}
+
+fonction principal() {
+    soit serveur = LumiNet.HTTP.Serveur()
+    serveur.canal("/chat", canal_ouvert)
+    serveur.écouter("127.0.0.1", 8080)
+}`,
+            },
+          ],
+          note: "The current HTTP client supports plain `http` URLs. Server examples keep listening until you stop the program or call `arrêter`/`arreter` from your own logic. Use explicit delays for client calls and socket reads while learning, because waiting forever is usually a program design mistake.",
         },
         {
           id: "quick-reference",
@@ -999,7 +1997,7 @@ Bytecode function:
             "The value model covers scalar values, collections, callable values, classes, interfaces, module objects, and `rien`. This is why changes to a value kind are high impact: display, equality, type checks, indexing, native argument validation, and VM interoperability can all be affected.",
           ],
           refs: [
-            { term: "Scalars", description: "`Entier`, `Décimal`, `Booléen`, `Texte`, `Symbole`, and `rien`." },
+            { term: "Scalars", description: "`Entier`, `Décimal`, `Logique`, `Texte`, `Symbole`, and `rien`." },
             { term: "Collections", description: "`Liste`, `ListeFixe`, `Dictionnaire`, and `Ensemble`." },
             { term: "Callables", description: "User functions and native functions share the same call boundary." },
             { term: "Objects", description: "Class instances and native module objects expose fields and callable members." },
@@ -1146,7 +2144,7 @@ Texte:
   member resolver:
     receiver: Texte
     member: "taille" | "elaguer" | "separer" | ...
-    args -> validate -> return Texte/List/Entier/Booléen`,
+    args -> validate -> return Texte/List/Entier/Logique`,
         },
         {
           id: "stdlib-chemin-fichier",
@@ -1177,7 +2175,7 @@ Fichier operation:
   path Texte
     -> validate expected file/directory state when needed
     -> perform host filesystem operation
-    -> return Booléen | Texte | Liste[Texte] | rien
+    -> return Logique | Texte | Liste[Texte] | rien
     -> translate filesystem failure to runtime error`,
         },
         {
@@ -1272,11 +2270,11 @@ capability object:
 
 TcpConnectionState:
   fd: socket handle
-  closed: Booléen
+  closed: Logique
 
 HttpServerState:
   fd: listen socket
-  stopped: Booléen
+  stopped: Logique
   middleware: Function[]
   routes: { method, pattern, handler }[]
   canal_routes: { pattern, handler }[]`,
@@ -1646,6 +2644,23 @@ which -a lumiere`,
           code: `fonction principal() {
     afficher("Bonjour, monde!")
 }`,
+          examples: [
+            {
+              title: "Afficher deux lignes",
+              body: "`principal` peut contenir plusieurs instructions. Lumière les exécute de haut en bas, donc la sortie du terminal suit l’ordre des lignes dans le fichier.",
+              code: `fonction principal() {
+    afficher("Bonjour")
+    afficher("Bienvenue dans Lumière")
+}`,
+            },
+            {
+              title: "Changer seulement le texte",
+              body: "Les guillemets font partie de la syntaxe. Les mots entre les guillemets sont vos données. Changez les mots, mais gardez le guillemet ouvrant et le guillemet fermant.",
+              code: `fonction principal() {
+    afficher("Je viens d'écrire mon premier programme.")
+}`,
+            },
+          ],
           note: "Enregistrez le fichier, puis lancez-le avec `lumiere bonjour.lum` dans le terminal. Vous devriez voir `Bonjour, monde!`. Si c’est le cas, changez le texte entre guillemets, enregistrez, puis relancez la commande.",
         },
         {
@@ -1677,7 +2692,26 @@ which -a lumiere`,
     afficher("Lumière")
     afficher(vrai)
 }`,
-          note: "Lancez ce programme une fois, puis ajoutez `afficher(faux)` et relancez-le. 42 est un Entier, 3.14 est un Décimal, le texte est Texte, et `vrai`/`faux` sont des valeurs Booléen.",
+          examples: [
+            {
+              title: "Utiliser des valeurs directement",
+              body: "Une valeur peut être écrite directement à l’endroit où elle est nécessaire. C’est pratique au début, car chaque ligne produit un résultat visible.",
+              code: `fonction principal() {
+    afficher("Nom")
+    afficher(2026)
+    afficher(faux)
+}`,
+            },
+            {
+              title: "Combiner du texte et un nombre",
+              body: "Quand vous mettez du texte et un nombre ensemble avec `+`, Lumière construit une seule sortie texte. Cela permet d’étiqueter ce que vous affichez.",
+              code: `fonction principal() {
+    afficher("score=" + 10)
+    afficher("niveau=" + 2)
+}`,
+            },
+          ],
+          note: "Lancez ce programme une fois, puis ajoutez `afficher(faux)` et relancez-le. 42 est un Entier, 3.14 est un Décimal, le texte est Texte, et `vrai`/`faux` sont des valeurs Logique.",
         },
         {
           id: "variables-pour-memoriser",
@@ -1693,6 +2727,33 @@ which -a lumiere`,
     afficher(nom)
     afficher(age)
 }`,
+          examples: [
+            {
+              title: "Nommer une valeur une fois, la réutiliser plusieurs fois",
+              body: "La valeur gardée dans `nom` ne disparaît pas après le premier `afficher`. Vous pouvez utiliser la même variable partout après sa création.",
+              code: `fonction principal() {
+    soit nom = "Ada"
+
+    afficher(nom)
+    afficher("Bonjour " + nom)
+    afficher(nom + " apprend Lumière")
+}`,
+            },
+            {
+              title: "Mettre une variable à jour",
+              body: "Une variable peut recevoir une nouvelle valeur plus tard. Lisez ceci ainsi : le score commence à 0, devient 10, puis devient 15.",
+              code: `fonction principal() {
+    soit score = 0
+    afficher(score)
+
+    score = 10
+    afficher(score)
+
+    score = score + 5
+    afficher(score)
+}`,
+            },
+          ],
           note: "Remplacez `nom` par votre propre nom et `age` par un autre nombre. Ajoutez ensuite `afficher(\"Nom : \" + nom)`. Choisissez des noms qui décrivent le sens de la valeur ; `nom` est plus clair que `x`.",
         },
         {
@@ -1709,6 +2770,37 @@ which -a lumiere`,
 
     afficher("total=" + total)
 }`,
+          examples: [
+            {
+              title: "Construire un petit reçu",
+              body: "Cet exemple rend chaque étape visible. Le sous-total est calculé d’abord, puis la taxe, puis le total final. Nommer chaque étape rend le calcul plus facile à vérifier.",
+              code: `fonction principal() {
+    soit prix = 20
+    soit quantite = 3
+    soit sous_total = prix * quantite
+    soit taxe = sous_total * 0.05
+    soit total = sous_total + taxe
+
+    afficher("sous-total=" + sous_total)
+    afficher("taxe=" + taxe)
+    afficher("total=" + total)
+}`,
+            },
+            {
+              title: "Calculer une moyenne",
+              body: "Une moyenne est un total divisé par un nombre d’éléments. Écrivez le programme dans le même ordre que l’explication orale.",
+              code: `fonction principal() {
+    soit premiere_note = 12
+    soit deuxieme_note = 16
+    soit troisieme_note = 14
+
+    soit total = premiere_note + deuxieme_note + troisieme_note
+    soit moyenne = total / 3
+
+    afficher("moyenne=" + moyenne)
+}`,
+            },
+          ],
           note: "Transformez cet exemple en petit calculateur : ajoutez `taxe`, calculez `total_avec_taxe`, puis affichez les deux totaux. Si le résultat vous surprend, affichez chaque variable seule avant le résultat final.",
         },
         {
@@ -1726,6 +2818,35 @@ fonction principal() {
     afficher(saluer("Ada"))
     afficher(saluer("Camille"))
 }`,
+          examples: [
+            {
+              title: "Rendre explicite la partie répétée",
+              body: "Sans fonction, vous copieriez la même logique de salutation pour chaque personne. Avec une fonction, la règle vit à un seul endroit et l’entrée change.",
+              code: `fonction saluer(nom: Texte) -> Texte {
+    retourne "Bonjour, " + nom
+}
+
+fonction principal() {
+    soit premier = saluer("Ada")
+    soit deuxieme = saluer("Grace")
+
+    afficher(premier)
+    afficher(deuxieme)
+}`,
+            },
+            {
+              title: "Utiliser plusieurs paramètres",
+              body: "Une fonction peut recevoir plusieurs valeurs. Chaque paramètre a besoin d’un nom et d’un type, et l’appel doit fournir les valeurs nécessaires.",
+              code: `fonction presenter(nom: Texte, age: Entier) -> Texte {
+    retourne nom + " a " + age + " ans"
+}
+
+fonction principal() {
+    afficher(presenter("Ada", 36))
+    afficher(presenter("Grace", 85))
+}`,
+            },
+          ],
           note: "Lisez `saluer(nom: Texte)` comme : saluer a besoin d’une valeur Texte nommée nom. Ajoutez une deuxième fonction nommée `crier` qui retourne le même nom avec `!` à la fin, puis appelez-la depuis `principal`.",
         },
         {
@@ -1745,6 +2866,36 @@ fonction principal() {
     afficher(resultat)
     afficher(double(10))
 }`,
+          examples: [
+            {
+              title: "Retourner tôt quand la réponse est connue",
+              body: "`retourne` arrête aussi la fonction. Ici, un score négatif retourne immédiatement 0, donc la dernière ligne ne s’exécute que pour les scores non négatifs.",
+              code: `fonction corriger_score(score: Entier) -> Entier {
+    si (score < 0) {
+        retourne 0
+    }
+
+    retourne score
+}
+
+fonction principal() {
+    afficher(corriger_score(-3))
+    afficher(corriger_score(12))
+}`,
+            },
+            {
+              title: "Garder la réponse retournée",
+              body: "Une valeur retournée peut être gardée dans une variable. La ligne suivante devient plus lisible, car le calcul a déjà un nom.",
+              code: `fonction ajouter_taxe(prix: Décimal) -> Décimal {
+    retourne prix * 1.05
+}
+
+fonction principal() {
+    soit total = ajouter_taxe(20.0)
+    afficher("total=" + total)
+}`,
+            },
+          ],
           note: "`-> Entier` signifie que cette fonction promet de retourner un Entier. Essayez de remplacer `retourne nombre * 2` par `retourne \"non\"` et lancez le fichier. L’erreur fait partie de la leçon : Lumière vérifie la promesse.",
         },
         {
@@ -1781,6 +2932,43 @@ fonction principal() {
     afficher_statut(20)
     afficher_statut(12)
 }`,
+          examples: [
+            {
+              title: "Choisir un message à partir d’un score",
+              body: "La condition est la question entre parenthèses. Si `score >= 10` est vraie, Lumière exécute le premier bloc. Sinon, il exécute le bloc `sinon`.",
+              code: `fonction afficher_resultat(score: Entier) {
+    si (score >= 10) {
+        afficher("réussi")
+    } sinon {
+        afficher("à reprendre")
+    }
+}
+
+fonction principal() {
+    afficher_resultat(14)
+    afficher_resultat(8)
+}`,
+            },
+            {
+              title: "Traiter trois plages",
+              body: "Vous pouvez mettre un autre `si` dans `sinon` quand il y a plus de deux chemins. Lisez les branches de haut en bas.",
+              code: `fonction niveau(points: Entier) -> Texte {
+    si (points >= 90) {
+        retourne "excellent"
+    } sinon si (points >= 60) {
+        retourne "correct"
+    } sinon {
+        retourne "à travailler"
+    }
+}
+
+fonction principal() {
+    afficher(niveau(95))
+    afficher(niveau(72))
+    afficher(niveau(40))
+}`,
+            },
+          ],
           note: "Remplacez les âges par 18, 17 et 0. Ensuite, remplacez la condition `>= 18` par `> 18` et observez précisément quelle sortie change.",
         },
         {
@@ -1797,17 +2985,46 @@ fonction principal() {
         afficher(note)
     }
 }`,
+          examples: [
+            {
+              title: "Transformer plusieurs valeurs en un total",
+              body: "La boucle répète la même addition pour chaque note. `total` commence à 0, puis grandit chaque fois que la boucle voit une nouvelle valeur.",
+              code: `fonction principal() {
+    soit notes = [10, 12, 14]
+    soit total = 0
+
+    pour chaque note dans notes {
+        total = total + note
+    }
+
+    afficher("total=" + total)
+}`,
+            },
+            {
+              title: "Afficher une liste avec un rang",
+              body: "Une boucle peut mettre à jour plusieurs variables. Ici, `rang` indique quel élément est en train d’être affiché.",
+              code: `fonction principal() {
+    soit noms = ["Ada", "Grace", "Camille"]
+    soit rang = 1
+
+    pour chaque nom dans noms {
+        afficher(rang + ". " + nom)
+        rang = rang + 1
+    }
+}`,
+            },
+          ],
           note: "Ajoutez une variable `total` avant la boucle. Dans la boucle, ajoutez chaque `note` à `total`. Après la boucle, affichez `total`. Vous transformez ainsi une répétition d’affichage en répétition de calcul.",
         },
         {
           id: "variables-et-types",
           title: "Ajoutez des types pour rendre les règles plus claires",
           body: [
-            "Un type dit quel genre de valeur est autorisé. Entier signifie nombre entier, Texte signifie texte, et Booléen signifie vrai-ou-faux.",
+            "Un type dit quel genre de valeur est autorisé. Entier signifie nombre entier, Texte signifie texte, et Logique signifie vrai-ou-faux.",
             "Les types aident Lumière à trouver les erreurs. Si une fonction attend un nombre mais reçoit du texte, Lumière peut signaler le problème au lieu de continuer avec une mauvaise valeur.",
           ],
           bullets: [
-            "Les types scalaires courants incluent Entier, Décimal, Booléen, Texte, Rien et Universel.",
+            "Les types scalaires courants incluent Entier, Décimal, Logique, Texte, Rien et Universel.",
             "Les types de collections incluent Liste[T], ListeFixe[T, N], Dictionnaire[K, V] et Ensemble[T].",
             "Décimal accepte des valeurs Entier lorsque c’est approprié.",
             "Les collections placées dans d’autres collections sont vérifiées aussi.",
@@ -1821,6 +3038,38 @@ fonction principal() {
 
     retourne total / notes.taille()
 }`,
+          examples: [
+            {
+              title: "Lire les annotations comme des promesses",
+              body: "`nom: Texte` signifie que cette variable doit contenir du texte. `actif: Logique` signifie qu’elle doit contenir `vrai` ou `faux`. L’annotation documente l’intention et permet à Lumière de refuser les mélanges incorrects.",
+              code: `fonction principal() {
+    soit nom: Texte = "Ada"
+    soit age: Entier = 36
+    soit actif: Logique = vrai
+
+    afficher(nom)
+    afficher(age)
+    afficher(actif)
+}`,
+            },
+            {
+              title: "Typer la frontière d’une fonction",
+              body: "Les paramètres d’une fonction sont une frontière. Si `totaliser` dit recevoir `Liste[Entier]`, les appels doivent fournir une liste de nombres entiers.",
+              code: `fonction totaliser(nombres: Liste[Entier]) -> Entier {
+    soit total: Entier = 0
+
+    pour chaque nombre dans nombres {
+        total = total + nombre
+    }
+
+    retourne total
+}
+
+fonction principal() {
+    afficher(totaliser([1, 2, 3]))
+}`,
+            },
+          ],
           note: "Copiez ce code dans un fichier, puis ajoutez `principal` en dessous et appelez `moyenne([12, 15, 18])`. Ensuite, essayez de passer du texte au lieu de nombres pour voir comment la règle de type protège la fonction.",
         },
         {
@@ -1845,44 +3094,142 @@ fonction principal() {
         },
         {
           id: "collections",
-          title: "Les collections sont typées aux frontières",
+          title: "Les collections gardent plusieurs valeurs",
           body: [
-            "Lumière prend en charge les listes, listes fixes, dictionnaires et ensembles. Les listes conviennent aux valeurs ordonnées ; les dictionnaires conviennent aux valeurs retrouvées par clé.",
-            "Lorsqu’une collection a un type indiqué, les valeurs ajoutées doivent respecter ce type.",
+            "Une collection est une valeur qui contient plusieurs valeurs plus petites. Utilisez une collection quand un programme doit garder un groupe ensemble : plusieurs noms, plusieurs notes, plusieurs chemins ou plusieurs réglages.",
+            "Le premier choix est la forme du groupe. Utilisez une liste quand l’ordre compte. Utilisez un dictionnaire quand chaque valeur doit être retrouvée par une clé comme `nom`, `score` ou `langage`.",
+            "Une collection typée ajoute une règle sur ce qui peut entrer dedans. `Liste[Entier]` signifie que chaque élément de la liste doit être un `Entier`. `Dictionnaire[Texte, Entier]` signifie que chaque clé doit être du `Texte` et chaque valeur stockée doit être un `Entier`.",
           ],
           bullets: [
-            "Liste et ListeFixe peuvent être parcourues avec `pour chaque`.",
-            "Liste, ListeFixe, Dictionnaire et Texte acceptent les lectures par index.",
-            "Liste et ListeFixe acceptent les mutations par index.",
-            "Les clés et valeurs de Dictionnaire sont vérifiées lorsqu’un dictionnaire typé est modifié.",
+            "Utilisez `Liste` pour un groupe ordonné dont la taille peut changer.",
+            "Utilisez `ListeFixe` pour un groupe ordonné dont la taille est fixe.",
+            "Utilisez `Dictionnaire` quand une clé doit mener directement à une valeur.",
+            "Utilisez `Ensemble` quand l’appartenance compte plus que l’ordre ou les doublons.",
           ],
-          code: `fonction totaliser(nombres: Liste[Entier]) -> Entier {
-    soit total: Entier = 0
+          code: `fonction principal() {
+    soit notes: Liste[Entier] = [10, 12, 14]
+    soit total = 0
 
-    pour chaque nombre dans nombres {
-        total = total + nombre
+    pour chaque note dans notes {
+        total = total + note
     }
 
-    retourne total
+    afficher("total=" + total)
 }`,
-          note: "Utilisez ce modèle quand une liste doit devenir une seule réponse : commencez avec un résultat vide, parcourez chaque élément, mettez le résultat à jour, puis retournez-le après la boucle.",
+          examples: [
+            {
+              title: "Utiliser une liste quand l’ordre compte",
+              body: "Une liste garde les valeurs dans l’ordre. L’indice `0` lit le premier élément, l’indice `1` lit le deuxième, et ainsi de suite.",
+              code: `fonction principal() {
+    soit noms = ["Ada", "Grace", "Camille"]
+
+    afficher(noms[0])
+    afficher(noms[1])
+    afficher("nombre=" + noms.taille())
+}`,
+            },
+            {
+              title: "Utiliser un dictionnaire quand les noms comptent",
+              body: "Un dictionnaire garde les valeurs derrière des clés. C’est utile quand vous voulez demander `nom` ou `langage` directement au lieu de retenir un indice.",
+              code: `fonction principal() {
+    soit projet = {
+        "nom": "Lumière",
+        "langage": "C++"
+    }
+
+    afficher(projet["nom"])
+    afficher(projet["langage"])
+}`,
+            },
+            {
+              title: "Laisser le type repérer une mauvaise valeur",
+              body: "L’annotation de type est une règle pour toute la collection. Si une liste est déclarée comme `Liste[Entier]`, y placer du texte est une erreur que Lumière peut signaler.",
+              code: `fonction principal() {
+    soit notes: Liste[Entier] = [10, 12, 14]
+
+    notes[0] = 20
+    afficher(notes[0])
+
+    // Essayez ensuite cette ligne :
+    // notes[1] = "absent"
+}`,
+            },
+          ],
+          note: "Ne commencez pas par mémoriser tous les types de collections. Commencez avec `Liste` et `Dictionnaire`. Quand ces deux formes deviennent naturelles, `ListeFixe` et `Ensemble` sont plus faciles à comprendre.",
         },
         {
           id: "controle-de-flux",
-          title: "Le contrôle de flux utilise des mots français et une structure familière",
+          title: "Le contrôle de flux choisit le chemin",
           body: [
-            "Lumière prend en charge les conditions, boucles tant que, boucles `pour chaque`, contrôles de boucle, retours, valeurs lancées, `essayer`/`attraper`/`finalement` et `agir selon`.",
-            "`agir selon` est utile quand une valeur doit être traitée par plusieurs branches possibles. La première branche qui correspond s’exécute ; utilisez `sinon` pour le cas de repli.",
+            "Le contrôle de flux désigne l’ordre dans lequel un programme s’exécute. La plupart des lignes s’exécutent de haut en bas, mais certaines instructions changent le chemin : une condition choisit un bloc, une boucle répète un bloc, et `retourne` quitte une fonction avec une réponse.",
+            "Commencez par des chemins simples avant d’utiliser les formes avancées. Utilisez `si` quand il y a deux ou trois choix. Utilisez `pour chaque` quand la même action doit être faite pour chaque valeur d’une collection. Utilisez `agir selon` quand une valeur possède plusieurs cas nommés.",
           ],
           bullets: [
-            "Les formes disponibles incluent les valeurs exactes, `rien` et les noms typés comme `n: Entier`.",
-            "Un nom typé crée une valeur utilisable dans la branche correspondante.",
-            "Utilisez `sinon` lorsque toutes les valeurs possibles doivent être traitées.",
+            "`si` pose une question oui/non et exécute un bloc seulement quand la réponse est `vrai`.",
+            "`sinon` donne au programme un chemin de repli quand la condition du `si` est `faux`.",
+            "`pour chaque` répète un bloc une fois pour chaque valeur d’une collection.",
+            "`retourne` arrête immédiatement la fonction courante et renvoie une valeur à l’appelant.",
           ],
-          code: `fonction etiquette(tags: Liste[Texte]) -> Texte {
+          code: `fonction prix_livraison(total: Décimal) -> Décimal {
+    si (total >= 50.0) {
+        retourne 0.0
+    }
+
+    retourne 7.5
+}
+
+fonction principal() {
+    afficher(prix_livraison(80.0))
+    afficher(prix_livraison(20.0))
+}`,
+          examples: [
+            {
+              title: "Choisir entre plusieurs messages",
+              body: "Les conditions sont testées de haut en bas. La première condition vraie gagne. Si aucune condition n’est vraie, le bloc final `sinon` s’exécute.",
+              code: `fonction message_temperature(degres: Entier) -> Texte {
+    si (degres < 0) {
+        retourne "gel"
+    } sinon si (degres < 20) {
+        retourne "frais"
+    } sinon {
+        retourne "chaud"
+    }
+}
+
+fonction principal() {
+    afficher(message_temperature(-4))
+    afficher(message_temperature(12))
+    afficher(message_temperature(28))
+}`,
+            },
+            {
+              title: "Arrêter la recherche quand la réponse est trouvée",
+              body: "`retourne` peut terminer une boucle plus tôt parce que la fonction est finie. Ici, la fonction s’arrête dès qu’elle trouve le nom cherché.",
+              code: `fonction contient_nom(noms: Liste[Texte], cherche: Texte) -> Logique {
+    pour chaque nom dans noms {
+        si (nom == cherche) {
+            retourne vrai
+        }
+    }
+
+    retourne faux
+}
+
+fonction principal() {
+    afficher(contient_nom(["Ada", "Grace"], "Grace"))
+    afficher(contient_nom(["Ada", "Grace"], "Camille"))
+}`,
+            },
+            {
+              title: "Utiliser agir selon pour des cas nommés",
+              body: "`agir selon` garde plusieurs cas organisés autour d’une seule valeur. Utilisez-le quand le programme ne pose pas seulement une question oui/non, mais décide ce que signifie une valeur précise.",
+              code: `fonction etiquette(tags: Liste[Texte]) -> Texte {
     agir selon tags.taille() {
         0 -> {
-            retourne "vide"
+            retourne "aucun tag"
+        }
+        1 -> {
+            retourne "un tag"
         }
         n: Entier -> {
             retourne "tags=" + n
@@ -1892,6 +3239,9 @@ fonction principal() {
         }
     }
 }`,
+            },
+          ],
+          note: "Quand le contrôle de flux devient difficile à suivre, écrivez les valeurs et tracez la branche qui s’exécute. Ne devinez pas ; suivez les conditions dans l’ordre.",
         },
         {
           id: "reference-expressions",
@@ -1901,7 +3251,7 @@ fonction principal() {
             "Les arguments nommés se lient par nom de paramètre et peuvent apparaître dans n’importe quel ordre. Les arguments nommés inconnus ou dupliqués sont rejetés.",
           ],
           refs: [
-            { term: "littéraux", description: "Entiers, décimaux, booléens, texte, symboles et `rien` sont pris en charge." },
+            { term: "littéraux", description: "Entiers, décimaux, valeurs logiques, texte, symboles et `rien` sont pris en charge." },
             { term: "`et` / `ou`", description: "Les opérateurs logiques court-circuitent." },
             { term: "`x est Type`", description: "Vérifie si une valeur possède un type donné." },
             { term: "`valeur en Type`", description: "Convertit une valeur vers un autre type lorsque cette conversion est prise en charge." },
@@ -1930,6 +3280,33 @@ importer Salutations.{saluer}
 fonction principal() {
     afficher(saluer("Ada"))
 }`,
+          examples: [
+            {
+              title: "Garder un helper dans un autre fichier",
+              body: "Créez `Calculs.lum` pour les calculs réutilisables, puis importez seulement la fonction publique nécessaire depuis `programme.lum`.",
+              code: `// Calculs.lum
+public fonction doubler(nombre: Entier) -> Entier {
+    retourne nombre * 2
+}
+
+// programme.lum
+importer Calculs.{doubler}
+
+fonction principal() {
+    afficher(doubler(21))
+}`,
+            },
+            {
+              title: "Importer un module comme espace de noms",
+              body: "Un import d’espace de noms garde le nom du module devant l’appel. C’est utile quand le helper vient d’un module plus large.",
+              code: `importer Maths
+
+fonction principal() {
+    soit racine = Maths.racine(81)
+    afficher(racine)
+}`,
+            },
+          ],
           note: "Cet exemple utilise deux fichiers. Placez-les dans le même dossier, lancez `lumiere programme.lum`, puis retirez `public` de Salutations.lum et relancez. L’échec montre pourquoi les noms exportés doivent être explicites.",
         },
         {
@@ -1962,28 +3339,113 @@ fonction principal() {
         },
         {
           id: "objets",
-          title: "Classes, héritage et interfaces",
+          title: "Les classes regroupent données et comportement",
           body: [
-            "Lumière prend en charge les déclarations de classes, la construction d’objets, les champs, méthodes, l’héritage et les interfaces.",
-            "Utilisez `ici` pour le receveur courant et `parent` pour appeler un comportement parent. Une classe peut déclarer qu’elle `réalise` une ou plusieurs interfaces.",
+            "Une classe est un plan pour fabriquer des objets. Utilisez une classe quand plusieurs valeurs vont ensemble et quand vous voulez aussi des fonctions qui travaillent avec ces valeurs.",
+            "Les champs sont les valeurs gardées dans l’objet. Les méthodes sont les fonctions attachées à l’objet. Dans une méthode, `ici` désigne l’objet qui reçoit l’appel de méthode.",
+            "L’héritage et les interfaces servent surtout dans des programmes plus grands. L’héritage permet à une classe de réutiliser les champs et méthodes d’une autre classe. Une interface décrit les méthodes qu’une classe doit fournir.",
           ],
           bullets: [
-            "`privé` est pris en charge sur les champs de classe, pas sur les déclarations de niveau fichier.",
-            "`remplace` peut être utilisé pour les méthodes qui redéfinissent un comportement hérité.",
-            "Les interfaces décrivent les fonctions qu’une classe doit fournir.",
+            "Créez un objet en appelant le nom de la classe, par exemple `Personne(nom: \"Ada\", age: 36)`.",
+            "Lisez un champ avec `objet.champ`, par exemple `p.nom`.",
+            "Appelez une méthode avec `objet.methode()`, par exemple `p.saluer()`.",
+            "Utilisez `privé` sur un champ quand le code extérieur ne devrait pas le lire directement.",
           ],
-          code: `interface Presentable {
-    fonction presenter()
+          code: `classe Personne {
+    nom: Texte
+    age: Entier
+
+    fonction saluer() {
+        afficher("Bonjour " + ici.nom)
+    }
+}
+
+fonction principal() {
+    soit p = Personne(nom: "Ada", age: 36)
+
+    afficher(p.nom)
+    afficher(p.age)
+    p.saluer()
+}`,
+          examples: [
+            {
+              title: "Mettre des valeurs liées dans un objet",
+              body: "Sans classe, `nom` et `age` sont des variables séparées. Avec une classe, elles voyagent ensemble comme une seule valeur `Personne`.",
+              code: `classe Personne {
+    nom: Texte
+    age: Entier
+}
+
+fonction principal() {
+    soit ada = Personne(nom: "Ada", age: 36)
+    soit grace = Personne(nom: "Grace", age: 85)
+
+    afficher(ada.nom)
+    afficher(grace.nom)
+}`,
+            },
+            {
+              title: "Utiliser ici dans une méthode",
+              body: "`ici.nom` signifie le champ `nom` de l’objet qui a reçu l’appel de méthode. La même méthode fonctionne pour deux objets parce que `ici` change selon le receveur.",
+              code: `classe Personne {
+    nom: Texte
+
+    fonction presentation() -> Texte {
+        retourne "Je suis " + ici.nom
+    }
+}
+
+fonction principal() {
+    soit ada = Personne(nom: "Ada")
+    soit grace = Personne(nom: "Grace")
+
+    afficher(ada.presentation())
+    afficher(grace.presentation())
+}`,
+            },
+            {
+              title: "Réutiliser un comportement avec l’héritage",
+              body: "`Chien : Animal` signifie qu’un `Chien` possède les champs et méthodes déclarés sur `Animal`. La classe enfant peut ajouter ses propres champs.",
+              code: `classe Animal {
+    nom: Texte
+
+    fonction decrire() {
+        afficher("Animal: " + ici.nom)
+    }
+}
+
+classe Chien : Animal {
+    race: Texte
+}
+
+fonction principal() {
+    soit c = Chien(nom: "Rex", race: "Berger")
+    afficher(c.race)
+    c.decrire()
+}`,
+            },
+            {
+              title: "Utiliser une interface pour une méthode attendue",
+              body: "Une interface est une promesse de comportement. `Rapport réalise Presentable` signifie que `Rapport` doit fournir la méthode demandée par `Presentable`.",
+              code: `interface Presentable {
+    fonction presenter() -> Texte
 }
 
 classe Rapport réalise Presentable {
     titre: Texte
 
-    fonction presenter() {
-        retourne "rapport:" + ici.titre
+    fonction presenter() -> Texte {
+        retourne "rapport: " + ici.titre
     }
+}
+
+fonction principal() {
+    soit rapport = Rapport(titre: "Alpha")
+    afficher(rapport.presenter())
 }`,
-          note: "Considérez cette section comme une carte avant d’écrire beaucoup de code objet. Commencez par des fonctions et des données ; introduisez une classe quand plusieurs valeurs et les fonctions qui les utilisent vont clairement ensemble.",
+            },
+          ],
+          note: "Ne commencez pas chaque programme avec des classes. Commencez avec variables et fonctions. Introduisez une classe quand un groupe de valeurs revient souvent ensemble et que les mêmes opérations appartiennent à ce groupe.",
         },
         {
           id: "shell-et-tests",
@@ -2003,24 +3465,17 @@ lumiere tester tests --filtre "nom du test"`,
         },
         {
           id: "tester-avec-lumitest",
-          title: "Tester avec LumiTest",
+          title: "Tester, c’est vérifier un comportement volontairement",
           body: [
-            "LumiTest est le module de test intégré. Les fichiers de test importent LumiTest explicitement, puis déclarent les cas avec LumiTest.test ou les groupes avec LumiTest.groupe.",
-            "Les hooks s’exécutent dans les groupes. `avant_tout` et `après_tout` s’exécutent une fois pour un groupe qui exécute réellement des tests. `avant_chaque` et `après_chaque` entourent chaque test dans leur portée, y compris les groupes imbriqués.",
+            "Un test est un petit programme qui vérifie un autre morceau de code. Au lieu de lancer votre programme, regarder la sortie, puis décider à l’œil si elle est correcte, un test écrit le résultat attendu directement dans le code.",
+            "Les tests sont importants parce que les programmes changent. Vous pouvez améliorer une fonction aujourd’hui et casser par accident quelque chose qui fonctionnait hier. Un bon test repère cette casse immédiatement.",
+            "Dans Lumière, les tests utilisent le module intégré `LumiTest`. Un test a un nom, du code à exécuter, et une ou plusieurs vérifications comme `vérifier_égal`.",
           ],
           refs: [
-            { term: "LumiTest.test(nom, fonction)", description: "Déclare un cas de test." },
-            { term: "LumiTest.groupe(nom, fonction)", description: "Regroupe des tests liés et produit un nom imbriqué comme Parent > Enfant > cas." },
-            { term: "LumiTest.avant_tout(fonction)", description: "Enregistre un hook avant-tout pour le groupe courant." },
-            { term: "LumiTest.avant_chaque(fonction)", description: "Enregistre un hook avant-chaque pour le groupe courant." },
-            { term: "LumiTest.après_chaque(fonction)", description: "Enregistre un hook après-chaque pour le groupe courant." },
-            { term: "LumiTest.après_tout(fonction)", description: "Enregistre un hook après-tout pour le groupe courant." },
-            { term: "LumiTest.vérifier(valeur, message?)", description: "Réussit si la valeur n’est ni rien ni faux." },
-            { term: "LumiTest.vérifier_égal(attendu, reçu, message?)", description: "Compare deux valeurs avec l’égalité Lumière." },
-            { term: "LumiTest.vérifier_différent(a, b, message?)", description: "Réussit si deux valeurs ne sont pas égales." },
-            { term: "LumiTest.vérifier_lance(fonction, message?)", description: "Réussit si la fonction lance une erreur." },
-            { term: "LumiTest.vérifier_contient(conteneur, élément, message?)", description: "Vérifie la présence dans texte, listes, ensembles et dictionnaires." },
-            { term: "LumiTest.vérifier_approx(attendu, reçu, tolérance, message?)", description: "Compare des nombres avec une tolérance absolue." },
+            { term: "Préparer", description: "Créer les valeurs dont le test a besoin." },
+            { term: "Agir", description: "Appeler la fonction ou lancer l’opération testée." },
+            { term: "Vérifier", description: "Comparer le résultat avec `LumiTest.vérifier`, `vérifier_égal` ou une autre assertion." },
+            { term: "Échec", description: "Un échec utile indique quel comportement a changé et quel résultat était attendu." },
           ],
           code: `importer LumiTest
 
@@ -2028,18 +3483,93 @@ fonction additionner(a: Entier, b: Entier) -> Entier {
     retourne a + b
 }
 
-LumiTest.groupe("Calculs", fonction() {
-    LumiTest.test("addition", fonction() {
-        LumiTest.vérifier_égal(5, additionner(2, 3))
+LumiTest.test("additionne deux nombres", fonction() {
+    soit resultat = additionner(2, 3)
+
+    LumiTest.vérifier_égal(5, resultat)
+})`,
+          examples: [
+            {
+              title: "Commencer par le plus petit test utile",
+              body: "Ce test vérifie un seul comportement : additionner deux nombres entiers. La fonction pourra être réécrite plus tard, mais le comportement doit rester le même.",
+              code: `importer LumiTest
+
+fonction additionner(a: Entier, b: Entier) -> Entier {
+    retourne a + b
+}
+
+LumiTest.test("2 + 3 donne 5", fonction() {
+    LumiTest.vérifier_égal(5, additionner(2, 3))
+})`,
+            },
+            {
+              title: "Faire en sorte que l’échec explique quelque chose",
+              body: "Lancez ce test une fois tel quel. Ensuite, remplacez `8` par `9` et relancez-le. L’échec montre que le test vérifie réellement le résultat.",
+              code: `importer LumiTest
+
+fonction doubler(nombre: Entier) -> Entier {
+    retourne nombre * 2
+}
+
+LumiTest.test("double 4", fonction() {
+    LumiTest.vérifier_égal(8, doubler(4))
+})`,
+            },
+            {
+              title: "Tester le comportement, pas l’implémentation",
+              body: "Le test ne s’intéresse pas à la manière dont `est_pair` est écrit. Il énonce seulement des exemples qui doivent rester vrais.",
+              code: `importer LumiTest
+
+fonction est_pair(nombre: Entier) -> Logique {
+    retourne nombre % 2 == 0
+}
+
+LumiTest.test("nombres pairs", fonction() {
+    LumiTest.vérifier(est_pair(2))
+    LumiTest.vérifier(est_pair(10))
+    LumiTest.vérifier_égal(faux, est_pair(3))
+})`,
+            },
+            {
+              title: "Regrouper les cas liés",
+              body: "Un groupe donne un nom commun à plusieurs tests. Utilisez les groupes quand une fonction a plusieurs cas importants : entrée normale, entrée vide ou cas limite.",
+              code: `importer LumiTest
+
+fonction saluer(nom: Texte) -> Texte {
+    retourne "Bonjour, " + nom
+}
+
+LumiTest.groupe("Salutations", fonction() {
+    LumiTest.test("nom simple", fonction() {
+        LumiTest.vérifier_égal("Bonjour, Ada", saluer("Ada"))
     })
 
-    LumiTest.test("erreur attendue", fonction() {
-        LumiTest.vérifier_lance(fonction() {
-            lancer "échec volontaire"
-        })
+    LumiTest.test("nom vide", fonction() {
+        LumiTest.vérifier_égal("Bonjour, ", saluer(""))
     })
 })`,
-          note: "Faites échouer le test d’addition volontairement en remplaçant `5` par `6`, lancez `lumiere tester tests`, puis corrigez-le. Un test est utile seulement si vous avez vu à quoi ressemble son échec.",
+            },
+            {
+              title: "Vérifier qu’une erreur est volontaire",
+              body: "Certaines fonctions doivent refuser les mauvaises entrées. `vérifier_lance` vérifie que le code dans la fonction anonyme lance une erreur.",
+              code: `importer LumiTest
+
+fonction diviser(a: Entier, b: Entier) -> Entier {
+    si (b == 0) {
+        lancer "division par zéro"
+    }
+
+    retourne a / b
+}
+
+LumiTest.test("refuse la division par zéro", fonction() {
+    LumiTest.vérifier_lance(fonction() {
+        diviser(10, 0)
+    })
+})`,
+            },
+          ],
+          note: "Placez les tests dans un dossier `tests` et lancez-les avec `lumiere tester tests`. Écrivez des tests pour les comportements que vous ne voulez pas casser par accident.",
         },
         {
           id: "modules-integres-en-pratique",
@@ -2076,7 +3606,7 @@ fonction principal() {
             "Les helpers Maths sont de simples appels de fonction. Placez la valeur à calculer entre parenthèses, gardez le résultat dans une variable si vous allez le réutiliser, et affichez de petits résultats intermédiaires pendant l’apprentissage.",
           ],
           bullets: [
-            "Utilisez `Entier` pour les comptes entiers : tentatives, âges, index et quantités.",
+            "Utilisez `Entier` pour les comptes entiers : tentatives, âges, indices et quantités.",
             "Utilisez `Décimal` pour les mesures : distance, ratios, moyennes et pourcentages.",
             "Vérifiez les domaines invalides avant d’appeler un helper : ne donnez pas une valeur négative à `racine`, et ne donnez pas zéro comme degré à `racine_n`.",
             "Ne comparez pas les résultats décimaux comme s’ils étaient toujours exacts. Dans les tests, utilisez LumiTest.vérifier_approx.",
@@ -2100,6 +3630,40 @@ fonction principal() {
     afficher("racine de 81=" + Maths.racine(81))
     afficher("4 est pair=" + Maths.est_pair(4))
 }`,
+          examples: [
+            {
+              title: "Choisir le bon helper d’arrondi",
+              body: "Les helpers d’arrondi répondent à des questions différentes. Utilisez `plancher` pour descendre, `plafond` pour monter, et `arrondir` pour obtenir l’entier le plus proche.",
+              code: `importer Maths
+
+fonction principal() {
+    soit prix = 12.75
+
+    afficher(Maths.plancher(prix))
+    afficher(Maths.plafond(prix))
+    afficher(Maths.arrondir(prix))
+}`,
+            },
+            {
+              title: "Vérifier une valeur avant de calculer",
+              body: "`Maths.racine` attend un nombre non négatif. Vérifiez la valeur d’abord quand elle peut venir d’un utilisateur, d’un fichier ou d’un autre calcul.",
+              code: `importer Maths
+
+fonction afficher_racine(nombre: Décimal) {
+    si (nombre < 0.0) {
+        afficher("racine impossible")
+        retourne
+    }
+
+    afficher(Maths.racine(nombre))
+}
+
+fonction principal() {
+    afficher_racine(81.0)
+    afficher_racine(-4.0)
+}`,
+            },
+          ],
           note: "Remplacez `rayon` par 10 et prédisez la nouvelle aire avant de lancer. Les helpers trigonométriques comme sin, cos et tan utilisent les radians. Convertissez les degrés avec degres_vers_radians avant de les utiliser.",
         },
         {
@@ -2108,12 +3672,12 @@ fonction principal() {
           body: [
             "Le travail sur du texte commence souvent par quatre questions : le texte est-il vide, contient-il un fragment, comment le découper, ou comment le nettoyer avant usage.",
             "La plupart des helpers Texte existent sous deux formes. Vous pouvez les appeler comme méthodes, par exemple `nom.elaguer()`, ou par le module, par exemple `Texte.elaguer(nom)`. Utilisez la forme méthode quand vous avez déjà la valeur texte sous les yeux.",
-            "Un bon schéma débutant est : nettoyer le texte, vérifier qu’il a la forme attendue, le découper, puis convertir seulement les morceaux qui doivent devenir des nombres ou des booléens.",
+            "Un bon schéma débutant est : nettoyer le texte, vérifier qu’il a la forme attendue, le découper, puis convertir seulement les morceaux qui doivent devenir des nombres ou des valeurs `Logique`.",
           ],
           bullets: [
             "Utilisez `elaguer` avant d’analyser une saisie utilisateur pour que les espaces accidentels ne fassent pas partie de la valeur.",
             "Utilisez `index_de` quand la position compte ; utilisez `contient` quand vous voulez seulement une réponse oui/non.",
-            "Après `separer`, inspectez la taille de la liste avant de lire des index si l’entrée peut être mal formée.",
+            "Après `separer`, inspectez la taille de la liste avant de lire des indices si l’entrée peut être mal formée.",
             "`en_logique` accepte `vrai` et `faux` ; ce n’est pas une conversion vague de vérité.",
           ],
           refs: [
@@ -2140,7 +3704,32 @@ fonction principal() {
     afficher(age + 1)
     afficher(Texte.joindre([prenom, nom], " "))
 }`,
-          note: "Remplacez `ligne` par `Grace,Hopper,85` sans espaces autour, puis relancez. Ensuite, retirez une virgule et observez pourquoi vérifier `morceaux.taille()` compte avant de lire des index.",
+          examples: [
+            {
+              title: "Nettoyer une entrée avant de l’utiliser",
+              body: "Les espaces en trop sont fréquents dans le texte copié ou saisi. Nettoyez d’abord, puis comparez ou convertissez.",
+              code: `fonction principal() {
+    soit reponse = "  oui  "
+    soit propre = reponse.elaguer()
+
+    afficher(propre)
+    afficher(propre == "oui")
+}`,
+            },
+            {
+              title: "Découper après avoir choisi un séparateur",
+              body: "`separer` transforme un texte en liste. Après le découpage, vérifiez la taille de la liste avant de supposer que chaque morceau existe.",
+              code: `fonction principal() {
+    soit ligne = "Ada;36;Lumière"
+    soit morceaux = ligne.separer(";")
+
+    afficher("morceaux=" + morceaux.taille())
+    afficher(morceaux[0])
+    afficher(morceaux[1].en_entier())
+}`,
+            },
+          ],
+          note: "Remplacez `ligne` par `Grace,Hopper,85` sans espaces autour, puis relancez. Ensuite, retirez une virgule et observez pourquoi vérifier `morceaux.taille()` compte avant de lire des indices.",
         },
         {
           id: "module-chemin",
@@ -2175,6 +3764,34 @@ fonction principal() {
     afficher(Chemin.extension(source))
     afficher(Chemin.dossier(source))
 }`,
+          examples: [
+            {
+              title: "Construire un chemin à partir de morceaux",
+              body: "Quand un chemin vient de plusieurs morceaux, utilisez `Chemin.joindre`. Le code indique les morceaux importants sans écrire les séparateurs à la main.",
+              code: `importer Chemin
+
+fonction principal() {
+    soit dossier = Chemin.joindre("journal", "2026")
+    soit fichier = Chemin.joindre(dossier, "juillet.txt")
+
+    afficher(fichier)
+    afficher(Chemin.dossier(fichier))
+}`,
+            },
+            {
+              title: "Inspecter un chemin avant de l’utiliser",
+              body: "Chemin aide à poser des questions sur du texte de chemin. C’est utile avant qu’un programme accepte ou refuse un nom de fichier.",
+              code: `importer Chemin
+
+fonction principal() {
+    soit fichier = "notes/bonjour.lum"
+
+    afficher(Chemin.nom(fichier))
+    afficher(Chemin.nom_sans_extension(fichier))
+    afficher(Chemin.extension(fichier))
+}`,
+            },
+          ],
           note: "Ajoutez `afficher(Chemin.absolu(source))` et comparez le chemin relatif avec le chemin absolu. Chemin retourne du texte normalisé ; il ne crée, ne lit et ne supprime rien.",
         },
         {
@@ -2219,6 +3836,41 @@ fonction principal() {
     afficher(lignes[0])
     afficher(Fichier.est_fichier(chemin))
 }`,
+          examples: [
+            {
+              title: "Écrire, puis relire",
+              body: "Le premier programme de fichiers le plus sûr écrit dans un dossier d’exercice, puis relit immédiatement le même fichier.",
+              code: `importer Chemin
+importer Fichier
+
+fonction principal() {
+    soit dossier = "atelier-fichiers"
+    soit fichier = Chemin.joindre(dossier, "message.txt")
+
+    si (non Fichier.existe(dossier)) {
+        Fichier.creer_dossiers(dossier)
+    }
+
+    Fichier.ecrire_texte(fichier, "Bonjour")
+    afficher(Fichier.lire_texte(fichier))
+}`,
+            },
+            {
+              title: "Ajouter quand l’historique compte",
+              body: "`ecrire_texte` remplace le contenu. `ajouter_texte` ajoute à la fin. Utilisez l’ajout pour les journaux et les enregistrements accumulés.",
+              code: `importer Chemin
+importer Fichier
+
+fonction principal() {
+    soit fichier = Chemin.joindre("atelier-fichiers", "journal.txt")
+
+    Fichier.ecrire_texte(fichier, "début\\n")
+    Fichier.ajouter_texte(fichier, "suite\\n")
+
+    afficher(Fichier.lire_texte(fichier))
+}`,
+            },
+          ],
           note: "Après le premier lancement, ouvrez `atelier-fichiers/notes.txt` dans VS Code. Ensuite, remplacez la liste par quatre lignes et relancez. `supprimer_arbre` retire récursivement un arbre de dossiers ; utilisez-le seulement sur des chemins créés volontairement.",
         },
         {
@@ -2255,6 +3907,32 @@ fonction principal() {
     afficher(fin.formater("HH:mm:ss"))
     afficher(duree.en_minutes())
 }`,
+          examples: [
+            {
+              title: "Formater le même instant de plusieurs façons",
+              body: "Le formatage ne change pas l’instant. Il change seulement la façon dont cet instant est affiché au lecteur.",
+              code: `importer Temps
+
+fonction principal() {
+    soit instant = Temps.depuis_horodatage(1704078245123)
+
+    afficher(instant.formater("AAAA-MM-JJ"))
+    afficher(instant.formater("HH:mm:ss"))
+}`,
+            },
+            {
+              title: "Ajouter une durée pour prévoir un moment futur",
+              body: "Utilisez les durées pour les quantités de temps. Ajoutez une durée à un instant quand vous voulez obtenir un instant futur.",
+              code: `importer Temps
+
+fonction principal() {
+    soit debut = Temps.depuis_horodatage(1704078245123)
+    soit fin = debut.ajouter(Temps.heures(2))
+
+    afficher(fin.formater("HH:mm:ss"))
+}`,
+            },
+          ],
           note: "Remplacez `Temps.minutes(90)` par `Temps.heures(2)` et prédisez l’heure de fin formatée. Temps.attendre met le programme en pause pour une Durée positive ; gardez les exemples courts pour éviter l’impression d’un programme bloqué.",
         },
         {
@@ -2292,37 +3970,74 @@ fonction principal() {
     afficher("dé=" + lancer)
     afficher(main.joindre(", "))
 }`,
+          examples: [
+            {
+              title: "Lancer plusieurs dés",
+              body: "`entier(1, 6)` inclut 1 et 6. C’est donc un modèle direct pour un dé standard.",
+              code: `importer Aléatoire
+
+fonction principal() {
+    Aléatoire.graine(7)
+
+    afficher(Aléatoire.entier(1, 6))
+    afficher(Aléatoire.entier(1, 6))
+    afficher(Aléatoire.entier(1, 6))
+}`,
+            },
+            {
+              title: "Choisir dans une liste",
+              body: "Utilisez `choisir` quand les valeurs possibles sont déjà dans une liste. La liste ne doit pas être vide.",
+              code: `importer Aléatoire
+
+fonction principal() {
+    Aléatoire.graine(3)
+
+    soit couleurs = ["rouge", "vert", "bleu"]
+    afficher(Aléatoire.choisir(couleurs))
+}`,
+            },
+          ],
           note: "Lancez ce programme plusieurs fois avec la même graine : le résultat devrait se répéter. Ensuite, retirez `Aléatoire.graine(42)` et relancez. Le nom de module sans accent Aleatoire est aussi accepté.",
         },
         {
           id: "module-luminet",
-          title: "LumiNet : programmer le réseau par étapes",
+          title: "LumiNet : adresses, HTTP, sockets et canaux",
           body: [
-            "LumiNet sert aux programmes qui communiquent sur le réseau. C’est plus avancé que les autres modules, car le résultat dépend parfois des ports, pare-feu, DNS, services locaux et du fait que le support réseau ait été activé à la compilation.",
-            "Apprenez-le par couches. Commencez par les adresses et le DNS. Faites ensuite une requête HTTP. Passez seulement après au TCP, à l’UDP, aux serveurs HTTP ou aux connexions Canal.",
-            "Un bon programme réseau a des délais et des messages d’échec clairs. Sans délai, un débutant peut confondre un réseau lent avec un programme cassé.",
+            "LumiNet est le module standard pour les programmes qui parlent avec d’autres programmes. Il couvre les couches courantes : adresses, DNS, requêtes HTTP, serveurs HTTP, flux TCP, datagrammes UDP et connexions Canal pour les échanges de messages continus.",
+            "Le code réseau est différent du code local, parce qu’une autre machine, un service, un pare-feu, un port ou un enregistrement DNS peut décider du résultat. Un programme Lumière correct peut échouer si l’adresse est mauvaise, si le serveur est arrêté, si le port est déjà utilisé ou si la version installée a été compilée sans support LumiNet.",
+            "Apprenez LumiNet dans l’ordre le moins risqué : valider des adresses, résoudre des noms, faire une requête HTTP, écrire un petit gestionnaire HTTP, puis utiliser TCP, UDP ou Canal quand HTTP n’a pas la bonne forme pour le besoin.",
           ],
           bullets: [
-            "Utilisez `LumiNet.Adresse` pour valider localement avant d’ouvrir des sockets.",
-            "Utilisez `LumiNet.DNS` quand vous devez transformer un nom d’hôte en adresse IP pour expliquer ou journaliser une connexion.",
-            "Utilisez les helpers HTTP pour les programmes requête/réponse. La réponse expose `statut`, `corps`, `succès`, `entête(nom)` et `entêtes()`.",
-            "Utilisez TCP/UDP seulement quand le protocole parlé n’est pas HTTP.",
-            "Utilisez Canal quand vous avez besoin d’un échange de messages continu plutôt qu’une requête et une réponse.",
+            "Utilisez `LumiNet.Adresse` avant d’ouvrir une connexion lorsque vous voulez valider un texte comme `127.0.0.1:8080`, séparer l’hôte du port ou vérifier si une adresse est locale.",
+            "Utilisez `LumiNet.DNS` quand l’utilisateur donne un nom comme `localhost` et que vous voulez connaître l’adresse que la pile réseau va réellement essayer.",
+            "Utilisez `LumiNet.HTTP` pour le travail requête/réponse habituel : lire une page, appeler un service local, envoyer une petite charge utile ou vérifier un statut et des en-têtes.",
+            "Utilisez `LumiNet.HTTP.Serveur` quand Lumière doit répondre à des requêtes HTTP. Les routes peuvent lire les paramètres de chemin, les valeurs de requête, les en-têtes et le corps reçu.",
+            "Utilisez `LumiNet.TCP` pour les protocoles en flux, lorsque les deux côtés gardent une connexion ouverte et lisent/écrivent du texte ou des octets.",
+            "Utilisez `LumiNet.UDP` pour les datagrammes : petits paquets indépendants, diffusion, découverte ou situations où perdre un paquet reste acceptable.",
+            "Utilisez `LumiNet.Canal` quand le programme a besoin de messages continus sur une connexion de style WebSocket au lieu d’une seule réponse HTTP.",
           ],
           refs: [
-            { term: "LumiNet.Adresse", description: "Analyse du texte hôte:port, vérifie IPv4/IPv6/local, et récupère une adresse locale." },
-            { term: "LumiNet.DNS", description: "Résout des noms d’hôte en adresses, retourne toutes les adresses, ou fait une résolution inverse." },
-            { term: "LumiNet.HTTP.obtenir(url)", description: "Envoie une requête HTTP GET. Le client actuel prend en charge les URL http simples." },
-            { term: "LumiNet.HTTP.créer / modifier / supprimer", description: "Envoie des requêtes POST, PUT ou DELETE. Les arguments nommés incluent corps, type, entêtes/entetes et délai/delai." },
-            { term: "LumiNet.TCP.connecter(hôte, port, délai?)", description: "Ouvre une connexion TCP cliente et permet de lire/écrire texte ou octets." },
-            { term: "LumiNet.UDP.ouvrir(port?)", description: "Ouvre une socket UDP pour envoyer, recevoir ou diffuser des datagrammes." },
-            { term: "LumiNet.HTTP.Serveur / LumiNet.Canal.Serveur", description: "Crée des serveurs HTTP ou Canal locaux avec routes et fonctions de rappel." },
+            { term: "LumiNet.Adresse.analyser(texte)", description: "Analyse un texte `hôte:port` et retourne un objet avec `hôte`, `port` et `en_texte()`." },
+            { term: "LumiNet.Adresse.est_valide / est_ipv4 / est_ipv6 / est_locale", description: "Répond à des questions d’adresse avant que le programme tente une connexion." },
+            { term: "LumiNet.Adresse.locale()", description: "Retourne un objet d’adresse locale. Utile pour les diagnostics et les petits outils locaux." },
+            { term: "LumiNet.DNS.résoudre / résoudre_tous / résoudre_inverse", description: "Résout une adresse, toutes les adresses, ou le nom associé à une adresse IP." },
+            { term: "délai / delai", description: "Argument optionnel de durée maximale pour les opérations clientes qui le supportent. C’est une valeur Durée, souvent créée avec `Temps.secondes(...)`." },
+            { term: "LumiNet.HTTP.obtenir / créer / modifier / supprimer", description: "Envoie GET, POST, PUT ou DELETE. Les arguments nommés incluent `corps`, `type`, `entêtes`/`entetes` et `délai`/`delai`." },
+            { term: "RéponseHTTP", description: "Les réponses du client HTTP exposent `statut`, `corps`, `succès`, `entête(nom)` et `entêtes()`." },
+            { term: "LumiNet.HTTP.Serveur()", description: "Crée un serveur avec `OBTENIR`, `CRÉER`, `MODIFIER`, `SUPPRIMER`, `avant`, `canal`, `écouter` et `arrêter`/`arreter`." },
+            { term: "RequêteHTTP", description: "Les gestionnaires serveur reçoivent un objet requête avec `méthode`, `chemin`, `corps`, `paramètre(nom)`, `requête(nom, défaut?)`, `entête(nom)` et `entêtes()`." },
+            { term: "RéponseServeurHTTP", description: "Les gestionnaires répondent avec `envoyer`, `envoyer_json`, `envoyer_fichier`, `rediriger` et `définir_entête`." },
+            { term: "LumiNet.TCP.connecter / LumiNet.TCP.Serveur", description: "Ouvre des clients ou serveurs TCP. Les connexions supportent `écrire`, `écrire_octets`, `lire`, `lire_ligne`, `lire_octets`, `définir_délai`, `est_connecté` et `fermer`." },
+            { term: "LumiNet.UDP.ouvrir(port?)", description: "Ouvre une socket UDP. Les sockets supportent `envoyer`, `envoyer_octets`, `diffuser`, `recevoir`, `recevoir_octets`, `définir_délai` et `fermer`." },
+            { term: "LumiNet.Canal.connecter / LumiNet.Canal.Serveur", description: "Crée des clients ou serveurs de style WebSocket avec des fonctions de rappel pour l’ouverture, les messages, la déconnexion et les erreurs." },
           ],
           code: `importer LumiNet
 importer Temps
 
 fonction principal() {
-    afficher(LumiNet.Adresse.est_locale("127.0.0.1"))
+    soit adresse = LumiNet.Adresse.analyser("127.0.0.1:8080")
+    afficher(adresse.hôte)
+    afficher(adresse.port)
 
     soit réponse = LumiNet.HTTP.obtenir(
         "http://example.com",
@@ -2332,7 +4047,287 @@ fonction principal() {
     afficher(réponse.statut)
     afficher(réponse.succès)
 }`,
-          note: "Lancez d’abord seulement la ligne sur l’adresse si vous apprenez hors ligne. Ajoutez la requête HTTP quand vous avez une connexion réseau. Un échec réseau n’est pas une erreur de syntaxe Lumière.",
+          examples: [
+            {
+              title: "Vérifier et analyser les adresses avant de se connecter",
+              body: "C’est la première bonne habitude avec LumiNet. Elle sépare les erreurs dans une adresse donnée par l’utilisateur des vrais échecs de connexion.",
+              code: `importer LumiNet
+
+fonction principal() {
+    soit adresse = LumiNet.Adresse.analyser("127.0.0.1:8080")
+
+    afficher(adresse.hôte)
+    afficher(adresse.port)
+    afficher(adresse.en_texte())
+
+    afficher(LumiNet.Adresse.est_valide("127.0.0.1"))
+    afficher(LumiNet.Adresse.est_ipv4("127.0.0.1"))
+    afficher(LumiNet.Adresse.est_ipv6("::1"))
+    afficher(LumiNet.Adresse.est_locale("127.0.0.1"))
+}`,
+            },
+            {
+              title: "Résoudre un nom avant d’expliquer une connexion",
+              body: "`localhost` est un nom. La résolution DNS indique l’adresse que le système lui associe. Utilisez-la quand votre programme doit montrer la destination qu’il va essayer.",
+              code: `importer LumiNet
+
+fonction principal() {
+    soit ip = LumiNet.DNS.résoudre("localhost")
+    afficher(ip)
+
+    soit adresses = LumiNet.DNS.résoudre_tous("localhost")
+    afficher(adresses.taille())
+
+    soit nom = LumiNet.DNS.résoudre_inverse("127.0.0.1")
+    afficher(nom)
+}`,
+            },
+            {
+              title: "Comprendre `délai` avant les appels réseau",
+              body: "`délai` signifie durée maximale d’attente. L’argument est optionnel, mais il est utile pendant l’apprentissage, car un serveur absent peut sinon donner l’impression que le programme est bloqué.",
+              code: `importer LumiNet
+importer Temps
+
+fonction principal() {
+    soit sans_délai = LumiNet.HTTP.obtenir("http://example.com")
+
+    soit avec_délai = LumiNet.HTTP.obtenir(
+        "http://example.com",
+        délai: Temps.secondes(2)
+    )
+
+    afficher(sans_délai.statut)
+    afficher(avec_délai.statut)
+}`,
+            },
+            {
+              title: "Voir HTTP comme requête, statut, en-têtes et corps",
+              body: "Une réponse HTTP n’est pas seulement du texte. `statut` dit ce qui s’est passé, `succès` vaut vrai pour les statuts 2xx, `corps` contient le corps de la réponse et `entête` lit un en-tête.",
+              code: `importer LumiNet
+importer Temps
+
+fonction principal() {
+    soit réponse = LumiNet.HTTP.obtenir(
+        "http://example.com",
+        délai: Temps.secondes(2)
+    )
+
+    afficher(réponse.statut)
+    afficher(réponse.succès)
+    afficher(réponse.entête("Content-Type"))
+
+    si (réponse.succès) {
+        afficher(réponse.corps)
+    } sinon {
+        afficher("La requête a échoué.")
+    }
+}`,
+            },
+            {
+              title: "Envoyer une petite charge utile HTTP",
+              body: "`créer` envoie POST, `modifier` envoie PUT et `supprimer` envoie DELETE. Utilisez `corps` pour la charge utile et `type` pour l’en-tête `Content-Type`.",
+              code: `importer LumiNet
+importer Temps
+
+fonction principal() {
+    soit réponse = LumiNet.HTTP.créer(
+        "http://127.0.0.1:8080/messages",
+        corps: "bonjour",
+        type: "text/plain",
+        délai: Temps.secondes(2)
+    )
+
+    afficher(réponse.statut)
+    afficher(réponse.succès)
+}`,
+            },
+            {
+              title: "Écrire un petit serveur HTTP",
+              body: "Un gestionnaire de route reçoit une requête et un objet de réponse. Les paramètres de chemin viennent de `:nom`; les valeurs de requête viennent de la partie après `?`; les en-têtes viennent de la requête.",
+              code: `importer LumiNet
+
+fonction bonjour(req: Universel, rep: Universel) {
+    soit nom = req.paramètre("nom")
+    soit ton = req.requête("ton", "simple")
+
+    rep.définir_entête("X-Lumiere", "ok")
+    rep.envoyer(200, "Bonjour " + nom + " (" + ton + ")")
+}
+
+fonction principal() {
+    soit serveur = LumiNet.HTTP.Serveur()
+    serveur.OBTENIR("/bonjour/:nom", bonjour)
+    serveur.écouter("127.0.0.1", 8080)
+}`,
+            },
+            {
+              title: "Utiliser un middleware pour le travail HTTP partagé",
+              body: "`avant` enregistre une fonction qui s’exécute avant le gestionnaire de route. Le troisième paramètre, souvent nommé `suivant`, continue vers l’étape suivante. C’est utile pour les en-têtes ou le journal qui doivent s’appliquer à plusieurs routes.",
+              code: `importer LumiNet
+
+fonction ajouter_entête(req: Universel, rep: Universel, suivant: Universel) {
+    rep.définir_entête("X-Outil", "lumiere")
+    suivant()
+}
+
+fonction statut(req: Universel, rep: Universel) {
+    rep.envoyer_json(200, "{\\"statut\\":\\"ok\\"}")
+}
+
+fonction principal() {
+    soit serveur = LumiNet.HTTP.Serveur()
+    serveur.avant(ajouter_entête)
+    serveur.OBTENIR("/statut", statut)
+    serveur.écouter("127.0.0.1", 8080)
+}`,
+            },
+            {
+              title: "Rediriger ou servir un fichier depuis un gestionnaire HTTP",
+              body: "L’objet de réponse a plusieurs formes de réponse. Utilisez `rediriger` quand le client doit demander une autre URL. Utilisez `envoyer_fichier` quand un fichier régulier doit devenir le corps de la réponse; LumiNet choisit un type de contenu depuis l’extension.",
+              code: `importer LumiNet
+
+fonction accueil(req: Universel, rep: Universel) {
+    rep.rediriger("/index.html")
+}
+
+fonction page(req: Universel, rep: Universel) {
+    rep.envoyer_fichier(200, "site/index.html")
+}
+
+fonction principal() {
+    soit serveur = LumiNet.HTTP.Serveur()
+    serveur.OBTENIR("/", accueil)
+    serveur.OBTENIR("/index.html", page)
+    serveur.écouter("127.0.0.1", 8080)
+}`,
+            },
+            {
+              title: "Utiliser TCP quand il faut un flux",
+              body: "TCP est une connexion continue. Un côté écrit des octets ou du texte; l’autre lit depuis le même flux. Ajoutez un délai quand une lecture ne doit pas attendre indéfiniment.",
+              code: `importer LumiNet
+importer Temps
+
+fonction principal() {
+    soit connexion = LumiNet.TCP.connecter(
+        "127.0.0.1",
+        9000,
+        délai: Temps.secondes(2)
+    )
+
+    connexion.écrire("bonjour\\n")
+    afficher(connexion.est_connecté())
+    connexion.fermer()
+}`,
+            },
+            {
+              title: "Écrire un serveur TCP qui répond en écho",
+              body: "Un serveur TCP a besoin d’un callback `quand_connexion` avant de pouvoir écouter. Le callback reçoit un objet connexion. Cet exemple lit une ligne, écrit une réponse et ferme cette connexion.",
+              code: `importer LumiNet
+importer Temps
+
+fonction répondre(connexion: Universel) {
+    connexion.définir_délai(Temps.secondes(10))
+
+    soit ligne = connexion.lire_ligne()
+    connexion.écrire("écho:" + ligne + "\\n")
+    connexion.fermer()
+}
+
+fonction principal() {
+    soit serveur = LumiNet.TCP.Serveur()
+    serveur.quand_connexion(répondre)
+    serveur.écouter("127.0.0.1", 9000)
+}`,
+            },
+            {
+              title: "Utiliser UDP quand chaque message est son propre paquet",
+              body: "UDP ne crée pas de connexion. Vous ouvrez une socket, envoyez un datagramme et recevez des datagrammes qui indiquent l’adresse et le port de l’expéditeur. Définissez un délai avant de recevoir.",
+              code: `importer LumiNet
+importer Temps
+
+fonction principal() {
+    soit socket = LumiNet.UDP.ouvrir(9001)
+    socket.définir_délai(Temps.secondes(2))
+
+    socket.envoyer("salut", "127.0.0.1", 9001)
+
+    soit paquet = socket.recevoir()
+    afficher(paquet.données)
+    afficher(paquet.adresse)
+    afficher(paquet.port)
+
+    socket.fermer()
+}`,
+            },
+            {
+              title: "Envoyer des octets UDP ou diffuser du texte",
+              body: "`envoyer_octets` et `recevoir_octets` servent aux protocoles qui travaillent avec des valeurs d’octets brutes. `diffuser` envoie un datagramme texte à l’adresse de diffusion sur un port.",
+              code: `importer LumiNet
+importer Temps
+
+fonction principal() {
+    soit socket = LumiNet.UDP.ouvrir()
+    socket.définir_délai(Temps.secondes(2))
+
+    socket.envoyer_octets([76, 85, 77], "127.0.0.1", 9001)
+    socket.diffuser("lumiere?", 9001)
+
+    socket.fermer()
+}`,
+            },
+            {
+              title: "Utiliser Canal pour les messages continus",
+              body: "Canal sert aux échanges de style WebSocket. Le client enregistre des fonctions de rappel, envoie un message, puis attend pour que les messages entrants puissent être livrés à `quand_message`.",
+              code: `importer LumiNet
+
+fonction reçu(message: Universel) {
+    afficher(message)
+}
+
+fonction principal() {
+    soit canal = LumiNet.Canal.connecter("ws://127.0.0.1:8080/chat")
+    canal.quand_message(reçu)
+    canal.envoyer("salut")
+    canal.attendre()
+}`,
+            },
+            {
+              title: "Écrire un serveur Canal",
+              body: "Un serveur Canal est organisé autour de callbacks. `quand_connexion` s’exécute quand un client arrive; `quand_message` s’exécute à chaque message texte; `quand_déconnexion` et `quand_erreur` sont disponibles pour le cycle de vie.",
+              code: `importer LumiNet
+
+fonction sur_connexion(client: Universel) {
+    client.envoyer("bienvenue")
+}
+
+fonction sur_message(client: Universel, message: Universel) {
+    client.envoyer("écho:" + message)
+}
+
+fonction principal() {
+    soit serveur = LumiNet.Canal.Serveur()
+    serveur.quand_connexion(sur_connexion)
+    serveur.quand_message(sur_message)
+    serveur.écouter("127.0.0.1", 8081)
+}`,
+            },
+            {
+              title: "Transformer une route HTTP en Canal",
+              body: "`LumiNet.HTTP.Serveur` peut aussi exposer une route Canal avec `canal`. Utilisez cela quand le même serveur local doit répondre à des routes HTTP ordinaires et à des routes de messages de style WebSocket.",
+              code: `importer LumiNet
+
+fonction canal_ouvert(client: Universel) {
+    client.envoyer("prêt")
+}
+
+fonction principal() {
+    soit serveur = LumiNet.HTTP.Serveur()
+    serveur.canal("/chat", canal_ouvert)
+    serveur.écouter("127.0.0.1", 8080)
+}`,
+            },
+          ],
+          note: "Le client HTTP actuel supporte les URL `http` simples. Les exemples serveur restent à l’écoute jusqu’à ce que vous arrêtiez le programme ou appeliez `arrêter`/`arreter` depuis votre propre logique. Utilisez des délais explicites pour les appels client et les lectures de socket pendant l’apprentissage, car attendre indéfiniment est généralement un problème de conception du programme.",
         },
         {
           id: "reference-commandes",
@@ -2447,7 +4442,7 @@ flux d’échec:
             "Cette séparation compte parce que l’interpréteur et le lowering VM consomment la même structure proche du source. Une nouvelle fonctionnalité syntaxique doit être placée dans l’AST selon son sens, pas seulement selon sa forme textuelle.",
           ],
           refs: [
-            { term: "Nœuds d’expression", description: "Littéraux, identifiants, opérations binaires et unaires, conversions, tests de type, fonctions anonymes, appels, listes, dictionnaires, accès membre et accès index." },
+            { term: "Nœuds d’expression", description: "Littéraux, identifiants, opérations binaires et unaires, conversions, tests de type, fonctions anonymes, appels, listes, dictionnaires, accès membre et accès par indice." },
             { term: "Nœuds d’instruction", description: "Blocs, déclarations de variables, fonctions, classes, interfaces, imports, branches, boucles, retours, lancers, essayer/attraper/finalement et instructions d’expression." },
             { term: "Visitors", description: "L’interpréteur et les passes de compilation consomment les nœuds via des visitors d’expressions et d’instructions, ce qui rend la traversée explicite." },
             { term: "Tokens conservés", description: "Les nœuds AST gardent les tokens importants pour que les phases suivantes puissent reporter emplacements et noms correctement." },
@@ -2557,12 +4552,12 @@ Inspection VM:
           id: "lir-bytecode",
           title: "Conception LIR et bytecode",
           body: [
-            "Le LIR est une représentation abaissée avec opérandes explicites. Au lieu d’embarquer directement des nœuds AST, les instructions LIR référencent constantes, globals, locals, temporaires, fonctions, blocs, types, membres, captures, classes, interfaces, noms d’arguments et namespaces par index.",
+            "Le LIR est une représentation abaissée avec opérandes explicites. Au lieu d’embarquer directement des nœuds AST, les instructions LIR référencent constantes, globals, locals, temporaires, fonctions, blocs, types, membres, captures, classes, interfaces, noms d’arguments et namespaces par indice.",
             "Le contrôle de flux LIR est structuré par blocs. Les instructions régulières font le travail à l’intérieur d’un bloc, et chaque bloc se termine par un seul terminateur : saut, branche, retour de valeur ou retour nil. Cela retire le fallthrough implicite de la forme abaissée.",
             "Le bytecode est le format compact exécuté par la VM. Il contient des opcodes pour constantes, globals, locals, captures, closures, try/throw, sauts, arithmétique, comparaisons, appels, accès membre, classes, interfaces, namespaces, collections, conversions, tests de type, assertions, erreurs de match, pop de pile et retour.",
           ],
           refs: [
-            { term: "Constantes", description: "Les valeurs littérales sont stockées dans des tables et référencées par index." },
+            { term: "Constantes", description: "Les valeurs littérales sont stockées dans des tables et référencées par indice." },
             { term: "Locals et captures", description: "Les noms locaux à une fonction et les noms capturés sont séparés pour représenter les closures explicitement." },
             { term: "Membres", description: "Les noms de membres sont indexés pour encoder compactement get, set et call membre." },
             { term: "Emplacements source", description: "LIR et bytecode transportent des coordonnées source pour diagnostics et désassemblage." },
@@ -2592,7 +4587,7 @@ Fonction bytecode:
             "Le modèle couvre valeurs scalaires, collections, valeurs appelables, classes, interfaces, objets de modules et `rien`. C’est pourquoi un changement de type de valeur a un impact large : affichage, égalité, vérifications de type, indexation, validation des arguments natifs et interopération VM peuvent tous être touchés.",
           ],
           refs: [
-            { term: "Scalaires", description: "`Entier`, `Décimal`, `Booléen`, `Texte`, `Symbole` et `rien`." },
+            { term: "Scalaires", description: "`Entier`, `Décimal`, `Logique`, `Texte`, `Symbole` et `rien`." },
             { term: "Collections", description: "`Liste`, `ListeFixe`, `Dictionnaire` et `Ensemble`." },
             { term: "Appelables", description: "Fonctions utilisateur et fonctions natives partagent la même frontière d’appel." },
             { term: "Objets", description: "Instances de classes et objets natifs de modules exposent champs et membres appelables." },
@@ -2739,7 +4734,7 @@ Texte:
   resolver membre:
     receiver: Texte
     member: "taille" | "elaguer" | "separer" | ...
-    args -> valider -> retourner Texte/List/Entier/Booléen`,
+    args -> valider -> retourner Texte/List/Entier/Logique`,
         },
         {
           id: "stdlib-chemin-fichier",
@@ -2770,7 +4765,7 @@ opération Fichier:
   chemin Texte
     -> valider état fichier/dossier si nécessaire
     -> effectuer opération filesystem hôte
-    -> retourner Booléen | Texte | Liste[Texte] | rien
+    -> retourner Logique | Texte | Liste[Texte] | rien
     -> traduire échec filesystem en erreur runtime`,
         },
         {
@@ -2865,11 +4860,11 @@ objet capacité:
 
 TcpConnectionState:
   fd: handle socket
-  closed: Booléen
+  closed: Logique
 
 HttpServerState:
   fd: socket écoute
-  stopped: Booléen
+  stopped: Logique
   middleware: Function[]
   routes: { method, pattern, handler }[]
   canal_routes: { pattern, handler }[]`,
