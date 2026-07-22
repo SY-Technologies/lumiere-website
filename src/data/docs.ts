@@ -1581,7 +1581,7 @@ fonction ajouter_entête(req: Universel, rep: Universel, suivant: Universel) {
 }
 
 fonction statut(req: Universel, rep: Universel) {
-    rep.envoyer_json(200, "{\\"statut\\":\\"ok\\"}")
+    rep.envoyer(200, "statut=ok")
 }
 
 fonction principal() {
@@ -1752,6 +1752,497 @@ fonction principal() {
             { term: "lumiere --help", description: "Show command-line help." },
             { term: "lumiere --version", description: "Print the installed version." },
           ],
+        },
+      ],
+    },
+    examples: {
+      title: "Lumière examples",
+      intro: "Larger programs that show how Lumière code is structured when the goal is more than a single language feature.",
+      sections: [
+        {
+          id: "how-to-read-examples",
+          title: "How to read these examples",
+          body: [
+            "These examples are not first-lesson snippets. They are meant to show how Lumière programs are shaped when they combine functions, collections, classes, modules, and standard-library APIs.",
+            "The examples stay within the current alpha. They do not pretend Lumière has a JSON parser, database driver, TLS client, package server, or asynchronous runtime when those are not part of the documented surface.",
+            "Start by reading the function names. Then read the data model. Only after that, read the body of each function. Serious programs become easier to understand when the names describe the job of each part.",
+          ],
+          bullets: [
+            "Use functions to isolate decisions: parsing, validation, lookup, formatting, and output should not all live in one block.",
+            "Use typed collections when the values should have one shape throughout the program.",
+            "Use classes when several values travel together and the name of the object matters.",
+            "Use LumiNet examples as local-development examples first. Bind to `127.0.0.1` while learning.",
+          ],
+        },
+        {
+          id: "multi-file-task-tracker",
+          title: "Multi-file project: typed task tracker",
+          body: [
+            "A serious Lumière program should not grow as one giant file. Split stable concepts into modules, export only what other files need with `public`, and keep `main.lum` focused on orchestration.",
+            "This project is deliberately flat because the current importer handles sibling modules cleanly from the project root. It still demonstrates real separation: domain model, statistics, table output, and application entry point.",
+            "Run the project from the folder that contains `main.lum` so imports such as `importer Taches.{...}` resolve against the project files.",
+          ],
+          refs: [
+            { term: "Taches.lum", description: "Domain model: the `Tache` class and task operations." },
+            { term: "Statistiques.lum", description: "Pure calculations over a list of tasks." },
+            { term: "Tableau.lum", description: "Terminal presentation for task rows." },
+            { term: "main.lum", description: "Program entry point: imports modules, creates data, mutates state, and prints the report." },
+          ],
+          code: `lumiere-projet/
+  main.lum
+  Taches.lum
+  Statistiques.lum
+  Tableau.lum`,
+          examples: [
+            {
+              title: "Taches.lum",
+              body: "The domain file owns the `Tache` type. Other files do not need to know how a task is created or marked complete.",
+              code: `public classe Tache {
+    id: Entier
+    titre: Texte
+    priorite: Entier
+    terminee: Logique
+
+    fonction etiquette() -> Texte {
+        soit statut = "ouverte"
+
+        si (ici.terminee) {
+            statut = "terminee"
+        }
+
+        retourne "#" + ici.id + " [" + statut + "] " + ici.titre
+    }
+}
+
+public fonction creer(id: Entier, titre: Texte, priorite: Entier) -> Tache {
+    retourne Tache(id: id, titre: titre, priorite: priorite, terminee: faux)
+}
+
+public fonction terminer(tache: Tache) {
+    tache.terminee = vrai
+}
+
+public fonction est_terminee(tache: Tache) -> Logique {
+    retourne tache.terminee
+}`,
+            },
+            {
+              title: "Statistiques.lum",
+              body: "This module imports the task type and one domain question, then exposes calculations that do not print anything.",
+              code: `importer Taches.{Tache, est_terminee}
+
+public fonction compter_terminees(taches: Liste[Tache]) -> Entier {
+    soit total = 0
+
+    pour chaque tache dans taches {
+        si (est_terminee(tache)) {
+            total = total + 1
+        }
+    }
+
+    retourne total
+}
+
+public fonction compter_ouvertes(taches: Liste[Tache]) -> Entier {
+    retourne taches.taille() - compter_terminees(taches)
+}`,
+            },
+            {
+              title: "Tableau.lum",
+              body: "Presentation is isolated from the domain and statistics. If the output format changes, this is the file to edit.",
+              code: `importer Taches.{Tache}
+
+public fonction afficher_tableau(taches: Liste[Tache]) {
+    afficher("TACHES")
+    afficher("------")
+
+    pour chaque tache dans taches {
+        afficher(tache.etiquette() + " priorité=" + tache.priorite)
+    }
+}`,
+            },
+            {
+              title: "main.lum",
+              body: "`main.lum` composes the modules. It creates the list, changes one task, then asks the report modules to do their jobs.",
+              code: `importer Taches.{Tache, creer, terminer}
+importer Statistiques.{compter_ouvertes, compter_terminees}
+importer Tableau.{afficher_tableau}
+
+fonction principal() {
+    soit taches: Liste[Tache] = []
+
+    taches.ajouter(creer(1, "concevoir API", 10))
+    taches.ajouter(creer(2, "écrire documentation", 7))
+    taches.ajouter(creer(3, "corriger tests", 9))
+
+    terminer(taches[1])
+
+    afficher_tableau(taches)
+    afficher("ouvertes=" + compter_ouvertes(taches))
+    afficher("terminees=" + compter_terminees(taches))
+}`,
+            },
+          ],
+          note: "From inside `lumiere-projet`, run `lumiere main.lum`.",
+        },
+        {
+          id: "file-backed-task-log",
+          title: "File-backed program: task log",
+          body: [
+            "A useful command-line program often needs a small amount of persistence. Lumière can read and write files through `Fichier`; combine it with `Chemin` so paths are built in one place.",
+            "This example creates a data folder if needed, writes an initial file, appends another line, reads the file back as lines, and prints a numbered report.",
+            "The file is plain text on purpose. Plain text is easy to inspect in VS Code and easy to recover if the program changes later.",
+          ],
+          refs: [
+            { term: "Chemin.joindre", description: "Builds the file path from stable path parts." },
+            { term: "Fichier.creer_dossiers", description: "Creates the data folder before writing inside it." },
+            { term: "Fichier.ecrire_lignes", description: "Writes a list of text values as newline-separated lines." },
+            { term: "liste.ajouter + Fichier.ecrire_lignes", description: "Adds a task to the in-memory list, then writes the full line list back to disk." },
+            { term: "Fichier.lire_lignes", description: "Reads the file back as a list so each task can be handled separately." },
+          ],
+          code: `importer Chemin
+importer Fichier
+
+fonction preparer_fichier() -> Texte {
+    soit dossier = "donnees"
+    soit chemin = Chemin.joindre(dossier, "taches.txt")
+
+    si (non Fichier.existe(dossier)) {
+        Fichier.creer_dossiers(dossier)
+    }
+
+    si (non Fichier.existe(chemin)) {
+        Fichier.ecrire_lignes(chemin, ["concevoir API", "écrire tests"])
+    }
+
+    retourne chemin
+}
+
+fonction ajouter_tache(chemin: Texte, titre: Texte) {
+    soit propre = titre.elaguer()
+
+    si (propre == "") {
+        retourne
+    }
+
+    soit lignes = Fichier.lire_lignes(chemin)
+    lignes.ajouter(propre)
+    Fichier.ecrire_lignes(chemin, lignes)
+}
+
+fonction afficher_taches(chemin: Texte) {
+    soit lignes = Fichier.lire_lignes(chemin)
+    soit numero = 1
+
+    pour chaque ligne dans lignes {
+        afficher(numero + ". " + ligne)
+        numero = numero + 1
+    }
+}
+
+fonction principal() {
+    soit chemin = preparer_fichier()
+
+    ajouter_tache(chemin, "documenter Fichier")
+    afficher_taches(chemin)
+}`,
+          note: "Run this from a practice folder. It creates `donnees/taches.txt`, then reads it back.",
+        },
+        {
+          id: "luminet-task-server",
+          title: "Full LumiNet server: task API with HTTP and Canal",
+          body: [
+            "This is a complete local server shape: shared middleware, route handlers, in-memory state, plain-text responses, request bodies, path parameters, status responses, and a Canal route for live messages.",
+            "The server keeps data in memory. That is intentional. LumiNet gives networking primitives; it does not provide a database layer. If the process stops, the in-memory tasks disappear.",
+            "The HTTP API uses simple text response bodies because the current documented standard library does not include a JSON module or string escape support for embedded quotes. The example uses `id=...;titre=...` response text for correctness.",
+          ],
+          refs: [
+            { term: "GET /statut", description: "Health endpoint returning a small text response." },
+            { term: "GET /taches/:id", description: "Reads one task by path parameter." },
+            { term: "POST /taches", description: "Creates one task from the raw request body." },
+            { term: "GET /", description: "Redirects to `/statut`." },
+            { term: "Canal /evenements", description: "Accepts a WebSocket-style connection and sends a welcome event." },
+          ],
+          code: `importer LumiNet
+
+soit taches: Dictionnaire[Texte, Texte] = {}
+soit prochain_id = 0
+
+fonction texte_tache(id: Texte, titre: Texte) -> Texte {
+    retourne "id=" + id + ";titre=" + titre
+}
+
+fonction repondre(rep: Universel, statut: Entier, corps: Texte) {
+    rep.définir_entête("X-Lumiere", "exemples")
+    rep.envoyer(statut, corps)
+}
+
+fonction journal(req: Universel, rep: Universel, suivant: Universel) {
+    afficher(req.méthode + " " + req.chemin)
+    rep.définir_entête("Access-Control-Allow-Origin", "*")
+    suivant()
+}
+
+fonction accueil(req: Universel, rep: Universel) {
+    rep.rediriger("/statut")
+}
+
+fonction statut(req: Universel, rep: Universel) {
+    repondre(rep, 200, "statut=ok;service=taches")
+}
+
+fonction creer_tache(req: Universel, rep: Universel) {
+    soit titre = req.corps.elaguer()
+
+    si (titre == "") {
+        repondre(rep, 400, "erreur=titre manquant")
+        retourne
+    }
+
+    prochain_id = prochain_id + 1
+    soit id = "" + prochain_id
+    taches[id] = titre
+
+    repondre(rep, 201, texte_tache(id, titre))
+}
+
+fonction lire_tache(req: Universel, rep: Universel) {
+    soit id = req.paramètre("id")
+
+    si (non taches.contient(id)) {
+        repondre(rep, 404, "erreur=tache introuvable")
+        retourne
+    }
+
+    repondre(rep, 200, texte_tache(id, taches[id]))
+}
+
+fonction canal_evenements(client: Universel) {
+    client.envoyer("connecté au flux des tâches")
+    client.envoyer("taches=" + taches.taille())
+}
+
+fonction principal() {
+    soit serveur = LumiNet.HTTP.Serveur()
+
+    serveur.avant(journal)
+    serveur.OBTENIR("/", accueil)
+    serveur.OBTENIR("/statut", statut)
+    serveur.OBTENIR("/taches/:id", lire_tache)
+    serveur.CRÉER("/taches", creer_tache)
+    serveur.canal("/evenements", canal_evenements)
+
+    afficher("Serveur Lumière sur http://127.0.0.1:8080")
+    serveur.écouter("127.0.0.1", 8080)
+}`,
+          note: "Run this as a local service. The current HTTP client/server examples use plain `http`, and this server keeps listening until you stop the process.",
+        },
+        {
+          id: "search-and-sort",
+          title: "Binary search and insertion sort",
+          body: [
+            "Binary search is useful when the list is already sorted. It cuts the search range in half at every step.",
+            "Insertion sort is useful as a teaching sort because it shows the central idea clearly: keep the left part sorted, then insert the next value into the correct position.",
+          ],
+          code: `importer Maths
+
+fonction rechercher_binaire(valeurs: Liste[Entier], cible: Entier) -> Entier {
+    soit gauche = 0
+    soit droite = valeurs.taille() - 1
+
+    tant que (gauche <= droite) {
+        soit milieu = Maths.tronquer((gauche + droite) / 2)
+        soit valeur = valeurs[milieu]
+
+        si (valeur == cible) {
+            retourne milieu
+        }
+
+        si (valeur < cible) {
+            gauche = milieu + 1
+        } sinon {
+            droite = milieu - 1
+        }
+    }
+
+    retourne -1
+}
+
+fonction tri_insertion(valeurs: Liste[Entier]) -> Liste[Entier] {
+    soit i = 1
+
+    tant que (i < valeurs.taille()) {
+        soit cle = valeurs[i]
+        soit j = i - 1
+
+        tant que (j >= 0) {
+            si (valeurs[j] <= cle) {
+                arrêter
+            }
+
+            valeurs[j + 1] = valeurs[j]
+            j = j - 1
+        }
+
+        valeurs[j + 1] = cle
+        i = i + 1
+    }
+
+    retourne valeurs
+}
+
+fonction principal() {
+    soit nombres = tri_insertion([7, 3, 9, 1, 4])
+
+    afficher(nombres.joindre(","))
+    afficher(rechercher_binaire(nombres, 4))
+    afficher(rechercher_binaire(nombres, 8))
+}`,
+          note: "The search returns the position of the value, or `-1` when the value is absent.",
+        },
+        {
+          id: "text-analysis",
+          title: "Text analysis with dictionaries",
+          body: [
+            "A dictionary is a natural fit for counting. The key is the item being counted, and the value is the number of times it has appeared.",
+            "This example normalizes the text, splits it into words, skips empty pieces, and updates counts in a typed dictionary.",
+          ],
+          code: `fonction compter_mots(texte: Texte) -> Dictionnaire[Texte, Entier] {
+    soit resultat: Dictionnaire[Texte, Entier] = {}
+    soit mots = texte.elaguer().minuscules().separer(" ")
+
+    pour chaque mot dans mots {
+        soit propre = mot.elaguer()
+
+        si (propre == "") {
+            continuer
+        }
+
+        si (resultat.contient(propre)) {
+            resultat[propre] = resultat[propre] + 1
+        } sinon {
+            resultat[propre] = 1
+        }
+    }
+
+    retourne resultat
+}
+
+fonction principal() {
+    soit comptes = compter_mots("lumiere code lumiere test code")
+
+    afficher(comptes["lumiere"])
+    afficher(comptes["code"])
+    afficher(comptes.cles().joindre(","))
+}`,
+          note: "This is deliberately simple tokenization. It splits on spaces; punctuation handling can be added as another cleaning step.",
+        },
+        {
+          id: "graph-shortest-path",
+          title: "Shortest path in an unweighted graph",
+          body: [
+            "Breadth-first search explores a graph in waves. It is the standard way to find a shortest path when every edge has the same cost.",
+            "The queue holds places still to explore. The `visites` dictionary prevents loops. The `precedent` dictionary records how the algorithm reached each node so the final path can be rebuilt.",
+          ],
+          code: `fonction plus_court_chemin(
+    graphe: Dictionnaire[Texte, Liste[Texte]],
+    depart: Texte,
+    arrivee: Texte
+) -> Liste[Texte] {
+    soit file: Liste[Texte] = [depart]
+    soit visites: Dictionnaire[Texte, Logique] = {}
+    soit precedent: Dictionnaire[Texte, Texte] = {}
+
+    visites[depart] = vrai
+
+    tant que (non file.vide()) {
+        soit courant = file.retirer_a(0)
+
+        si (courant == arrivee) {
+            arrêter
+        }
+
+        pour chaque voisin dans graphe[courant] {
+            si (non visites.contient(voisin)) {
+                visites[voisin] = vrai
+                precedent[voisin] = courant
+                file.ajouter(voisin)
+            }
+        }
+    }
+
+    si (non visites.contient(arrivee)) {
+        retourne []
+    }
+
+    soit chemin: Liste[Texte] = []
+    soit courant = arrivee
+
+    tant que (courant != depart) {
+        chemin.inserer(0, courant)
+        courant = precedent[courant]
+    }
+
+    chemin.inserer(0, depart)
+    retourne chemin
+}
+
+fonction principal() {
+    soit graphe: Dictionnaire[Texte, Liste[Texte]] = {
+        "A": ["B", "C"],
+        "B": ["A", "D"],
+        "C": ["A", "D", "E"],
+        "D": ["B", "C", "F"],
+        "E": ["C", "F"],
+        "F": ["D", "E"]
+    }
+
+    soit chemin = plus_court_chemin(graphe, "A", "F")
+    afficher(chemin.joindre(" -> "))
+}`,
+        },
+        {
+          id: "class-based-scheduler",
+          title: "A priority scheduler with classes",
+          body: [
+            "Classes are useful when a program needs named records. A task is not just a dictionary entry here; it has a title, a priority, and behavior through `decrire`.",
+            "The scheduler keeps the list sorted as tasks are inserted. Higher priority tasks stay closer to the front.",
+          ],
+          code: `classe Tache {
+    titre: Texte
+    priorite: Entier
+
+    fonction decrire() -> Texte {
+        retourne "[" + ici.priorite + "] " + ici.titre
+    }
+}
+
+fonction inserer_tache(file: Liste[Tache], tache: Tache) {
+    soit position = 0
+
+    tant que (position < file.taille()) {
+        si (file[position].priorite < tache.priorite) {
+            arrêter
+        }
+
+        position = position + 1
+    }
+
+    file.inserer(position, tache)
+}
+
+fonction principal() {
+    soit file: Liste[Tache] = []
+
+    inserer_tache(file, Tache(titre: "corriger bug réseau", priorite: 10))
+    inserer_tache(file, Tache(titre: "écrire documentation", priorite: 6))
+    inserer_tache(file, Tache(titre: "nettoyer exemples", priorite: 8))
+
+    pour chaque tache dans file {
+        afficher(tache.decrire())
+    }
+}`,
+          note: "This is the same idea used in many schedulers: insert or choose work according to a priority rule.",
         },
       ],
     },
@@ -4171,7 +4662,7 @@ fonction ajouter_entête(req: Universel, rep: Universel, suivant: Universel) {
 }
 
 fonction statut(req: Universel, rep: Universel) {
-    rep.envoyer_json(200, "{\\"statut\\":\\"ok\\"}")
+    rep.envoyer(200, "statut=ok")
 }
 
 fonction principal() {
@@ -4342,6 +4833,497 @@ fonction principal() {
             { term: "lumiere --help", description: "Affiche l’aide de ligne de commande." },
             { term: "lumiere --version", description: "Affiche la version installée." },
           ],
+        },
+      ],
+    },
+    examples: {
+      title: "Exemples Lumière",
+      intro: "Des programmes plus grands qui montrent comment structurer du code Lumière quand le but dépasse une seule fonctionnalité du langage.",
+      sections: [
+        {
+          id: "lire-les-exemples",
+          title: "Comment lire ces exemples",
+          body: [
+            "Ces exemples ne sont pas des extraits de première leçon. Ils montrent la forme de programmes Lumière qui combinent fonctions, collections, classes, modules et API de bibliothèque standard.",
+            "Les exemples restent dans l’alpha actuelle. Ils ne prétendent pas que Lumière possède un parseur JSON, un pilote de base de données, un client TLS, un serveur de paquets ou un runtime asynchrone quand ces éléments ne font pas partie de la surface documentée.",
+            "Commencez par lire les noms de fonctions. Lisez ensuite le modèle de données. Lisez seulement après le corps de chaque fonction. Les programmes sérieux deviennent plus simples à comprendre quand les noms décrivent le rôle de chaque partie.",
+          ],
+          bullets: [
+            "Utilisez les fonctions pour isoler les décisions : analyser, valider, chercher, formater et afficher ne devraient pas tous vivre dans le même bloc.",
+            "Utilisez des collections typées quand les valeurs doivent garder la même forme dans tout le programme.",
+            "Utilisez des classes quand plusieurs valeurs voyagent ensemble et que le nom de l’objet compte.",
+            "Utilisez les exemples LumiNet comme exemples de développement local d’abord. Liez le serveur à `127.0.0.1` pendant l’apprentissage.",
+          ],
+        },
+        {
+          id: "projet-multi-fichiers-taches",
+          title: "Projet multi-fichiers : suivi de tâches typé",
+          body: [
+            "Un programme Lumière sérieux ne devrait pas grossir comme un seul fichier géant. Séparez les concepts stables en modules, exportez seulement ce que les autres fichiers doivent utiliser avec `public`, et gardez `main.lum` concentré sur l’orchestration.",
+            "Ce projet reste volontairement plat, car l’importeur actuel résout proprement les modules frères depuis la racine du projet. Il montre quand même une vraie séparation : modèle métier, statistiques, affichage tableau et point d’entrée.",
+            "Lancez le projet depuis le dossier qui contient `main.lum` afin que les imports comme `importer Taches.{...}` soient résolus contre les fichiers du projet.",
+          ],
+          refs: [
+            { term: "Taches.lum", description: "Modèle métier : la classe `Tache` et les opérations sur les tâches." },
+            { term: "Statistiques.lum", description: "Calculs purs sur une liste de tâches." },
+            { term: "Tableau.lum", description: "Présentation terminal pour les lignes de tâches." },
+            { term: "main.lum", description: "Point d’entrée : importe les modules, crée les données, modifie l’état et affiche le rapport." },
+          ],
+          code: `lumiere-projet/
+  main.lum
+  Taches.lum
+  Statistiques.lum
+  Tableau.lum`,
+          examples: [
+            {
+              title: "Taches.lum",
+              body: "Le fichier métier possède le type `Tache`. Les autres fichiers n’ont pas besoin de savoir comment une tâche est créée ou terminée.",
+              code: `public classe Tache {
+    id: Entier
+    titre: Texte
+    priorite: Entier
+    terminee: Logique
+
+    fonction etiquette() -> Texte {
+        soit statut = "ouverte"
+
+        si (ici.terminee) {
+            statut = "terminee"
+        }
+
+        retourne "#" + ici.id + " [" + statut + "] " + ici.titre
+    }
+}
+
+public fonction creer(id: Entier, titre: Texte, priorite: Entier) -> Tache {
+    retourne Tache(id: id, titre: titre, priorite: priorite, terminee: faux)
+}
+
+public fonction terminer(tache: Tache) {
+    tache.terminee = vrai
+}
+
+public fonction est_terminee(tache: Tache) -> Logique {
+    retourne tache.terminee
+}`,
+            },
+            {
+              title: "Statistiques.lum",
+              body: "Ce module importe le type de tâche et une question métier, puis expose des calculs qui n’affichent rien.",
+              code: `importer Taches.{Tache, est_terminee}
+
+public fonction compter_terminees(taches: Liste[Tache]) -> Entier {
+    soit total = 0
+
+    pour chaque tache dans taches {
+        si (est_terminee(tache)) {
+            total = total + 1
+        }
+    }
+
+    retourne total
+}
+
+public fonction compter_ouvertes(taches: Liste[Tache]) -> Entier {
+    retourne taches.taille() - compter_terminees(taches)
+}`,
+            },
+            {
+              title: "Tableau.lum",
+              body: "La présentation est isolée du modèle et des statistiques. Si le format de sortie change, c’est ce fichier qu’il faut modifier.",
+              code: `importer Taches.{Tache}
+
+public fonction afficher_tableau(taches: Liste[Tache]) {
+    afficher("TACHES")
+    afficher("------")
+
+    pour chaque tache dans taches {
+        afficher(tache.etiquette() + " priorité=" + tache.priorite)
+    }
+}`,
+            },
+            {
+              title: "main.lum",
+              body: "`main.lum` compose les modules. Il crée la liste, change une tâche, puis demande aux modules de rapport de faire leur travail.",
+              code: `importer Taches.{Tache, creer, terminer}
+importer Statistiques.{compter_ouvertes, compter_terminees}
+importer Tableau.{afficher_tableau}
+
+fonction principal() {
+    soit taches: Liste[Tache] = []
+
+    taches.ajouter(creer(1, "concevoir API", 10))
+    taches.ajouter(creer(2, "écrire documentation", 7))
+    taches.ajouter(creer(3, "corriger tests", 9))
+
+    terminer(taches[1])
+
+    afficher_tableau(taches)
+    afficher("ouvertes=" + compter_ouvertes(taches))
+    afficher("terminees=" + compter_terminees(taches))
+}`,
+            },
+          ],
+          note: "Depuis `lumiere-projet`, lancez `lumiere main.lum`.",
+        },
+        {
+          id: "journal-taches-fichier",
+          title: "Programme avec fichier : journal de tâches",
+          body: [
+            "Un outil de ligne de commande utile a souvent besoin d’un peu de persistance. Lumière peut lire et écrire des fichiers avec `Fichier` ; combinez-le avec `Chemin` pour construire les chemins au même endroit.",
+            "Cet exemple crée un dossier de données si nécessaire, écrit un fichier initial, ajoute une ligne, relit le fichier comme liste de lignes, puis affiche un rapport numéroté.",
+            "Le fichier reste volontairement en texte simple. Le texte simple est facile à inspecter dans VS Code et facile à récupérer si le programme change plus tard.",
+          ],
+          refs: [
+            { term: "Chemin.joindre", description: "Construit le chemin du fichier à partir de morceaux stables." },
+            { term: "Fichier.creer_dossiers", description: "Crée le dossier de données avant d’écrire dedans." },
+            { term: "Fichier.ecrire_lignes", description: "Écrit une liste de textes sous forme de lignes séparées par des retours à la ligne." },
+            { term: "liste.ajouter + Fichier.ecrire_lignes", description: "Ajoute une tâche à la liste en mémoire, puis réécrit la liste complète sur disque." },
+            { term: "Fichier.lire_lignes", description: "Relit le fichier comme liste pour traiter chaque tâche séparément." },
+          ],
+          code: `importer Chemin
+importer Fichier
+
+fonction preparer_fichier() -> Texte {
+    soit dossier = "donnees"
+    soit chemin = Chemin.joindre(dossier, "taches.txt")
+
+    si (non Fichier.existe(dossier)) {
+        Fichier.creer_dossiers(dossier)
+    }
+
+    si (non Fichier.existe(chemin)) {
+        Fichier.ecrire_lignes(chemin, ["concevoir API", "écrire tests"])
+    }
+
+    retourne chemin
+}
+
+fonction ajouter_tache(chemin: Texte, titre: Texte) {
+    soit propre = titre.elaguer()
+
+    si (propre == "") {
+        retourne
+    }
+
+    soit lignes = Fichier.lire_lignes(chemin)
+    lignes.ajouter(propre)
+    Fichier.ecrire_lignes(chemin, lignes)
+}
+
+fonction afficher_taches(chemin: Texte) {
+    soit lignes = Fichier.lire_lignes(chemin)
+    soit numero = 1
+
+    pour chaque ligne dans lignes {
+        afficher(numero + ". " + ligne)
+        numero = numero + 1
+    }
+}
+
+fonction principal() {
+    soit chemin = preparer_fichier()
+
+    ajouter_tache(chemin, "documenter Fichier")
+    afficher_taches(chemin)
+}`,
+          note: "Lancez cet exemple depuis un dossier d’exercice. Il crée `donnees/taches.txt`, puis le relit.",
+        },
+        {
+          id: "serveur-taches-luminet",
+          title: "Serveur LumiNet complet : API de tâches avec HTTP et Canal",
+          body: [
+            "Voici une forme complète de serveur local : middleware partagé, gestionnaires de routes, état en mémoire, réponses texte, corps de requête, paramètres de chemin, route de statut et route Canal pour les messages en direct.",
+            "Le serveur garde les données en mémoire. C’est volontaire. LumiNet fournit les primitives réseau ; il ne fournit pas de couche base de données. Si le processus s’arrête, les tâches en mémoire disparaissent.",
+            "L’API HTTP écrit des corps de réponse texte simples parce que la bibliothèque standard documentée actuelle ne contient pas de module JSON ni de support d’échappement de guillemets dans les chaînes. L’exemple utilise donc des réponses texte `id=...;titre=...` pour rester correct.",
+          ],
+          refs: [
+            { term: "GET /statut", description: "Route de santé qui retourne une petite réponse texte." },
+            { term: "GET /taches/:id", description: "Lit une tâche à partir d’un paramètre de chemin." },
+            { term: "POST /taches", description: "Crée une tâche depuis le corps brut de la requête." },
+            { term: "GET /", description: "Redirige vers `/statut`." },
+            { term: "Canal /evenements", description: "Accepte une connexion de style WebSocket et envoie un événement de bienvenue." },
+          ],
+          code: `importer LumiNet
+
+soit taches: Dictionnaire[Texte, Texte] = {}
+soit prochain_id = 0
+
+fonction texte_tache(id: Texte, titre: Texte) -> Texte {
+    retourne "id=" + id + ";titre=" + titre
+}
+
+fonction repondre(rep: Universel, statut: Entier, corps: Texte) {
+    rep.définir_entête("X-Lumiere", "exemples")
+    rep.envoyer(statut, corps)
+}
+
+fonction journal(req: Universel, rep: Universel, suivant: Universel) {
+    afficher(req.méthode + " " + req.chemin)
+    rep.définir_entête("Access-Control-Allow-Origin", "*")
+    suivant()
+}
+
+fonction accueil(req: Universel, rep: Universel) {
+    rep.rediriger("/statut")
+}
+
+fonction statut(req: Universel, rep: Universel) {
+    repondre(rep, 200, "statut=ok;service=taches")
+}
+
+fonction creer_tache(req: Universel, rep: Universel) {
+    soit titre = req.corps.elaguer()
+
+    si (titre == "") {
+        repondre(rep, 400, "erreur=titre manquant")
+        retourne
+    }
+
+    prochain_id = prochain_id + 1
+    soit id = "" + prochain_id
+    taches[id] = titre
+
+    repondre(rep, 201, texte_tache(id, titre))
+}
+
+fonction lire_tache(req: Universel, rep: Universel) {
+    soit id = req.paramètre("id")
+
+    si (non taches.contient(id)) {
+        repondre(rep, 404, "erreur=tache introuvable")
+        retourne
+    }
+
+    repondre(rep, 200, texte_tache(id, taches[id]))
+}
+
+fonction canal_evenements(client: Universel) {
+    client.envoyer("connecté au flux des tâches")
+    client.envoyer("taches=" + taches.taille())
+}
+
+fonction principal() {
+    soit serveur = LumiNet.HTTP.Serveur()
+
+    serveur.avant(journal)
+    serveur.OBTENIR("/", accueil)
+    serveur.OBTENIR("/statut", statut)
+    serveur.OBTENIR("/taches/:id", lire_tache)
+    serveur.CRÉER("/taches", creer_tache)
+    serveur.canal("/evenements", canal_evenements)
+
+    afficher("Serveur Lumière sur http://127.0.0.1:8080")
+    serveur.écouter("127.0.0.1", 8080)
+}`,
+          note: "Lancez cet exemple comme service local. Les exemples client/serveur HTTP actuels utilisent `http` simple, et ce serveur reste à l’écoute jusqu’à ce que vous arrêtiez le processus.",
+        },
+        {
+          id: "recherche-et-tri",
+          title: "Recherche binaire et tri par insertion",
+          body: [
+            "La recherche binaire est utile quand la liste est déjà triée. Elle coupe la zone de recherche en deux à chaque étape.",
+            "Le tri par insertion est un bon tri d’apprentissage parce qu’il montre clairement l’idée centrale : garder la partie gauche triée, puis insérer la prochaine valeur au bon endroit.",
+          ],
+          code: `importer Maths
+
+fonction rechercher_binaire(valeurs: Liste[Entier], cible: Entier) -> Entier {
+    soit gauche = 0
+    soit droite = valeurs.taille() - 1
+
+    tant que (gauche <= droite) {
+        soit milieu = Maths.tronquer((gauche + droite) / 2)
+        soit valeur = valeurs[milieu]
+
+        si (valeur == cible) {
+            retourne milieu
+        }
+
+        si (valeur < cible) {
+            gauche = milieu + 1
+        } sinon {
+            droite = milieu - 1
+        }
+    }
+
+    retourne -1
+}
+
+fonction tri_insertion(valeurs: Liste[Entier]) -> Liste[Entier] {
+    soit i = 1
+
+    tant que (i < valeurs.taille()) {
+        soit cle = valeurs[i]
+        soit j = i - 1
+
+        tant que (j >= 0) {
+            si (valeurs[j] <= cle) {
+                arrêter
+            }
+
+            valeurs[j + 1] = valeurs[j]
+            j = j - 1
+        }
+
+        valeurs[j + 1] = cle
+        i = i + 1
+    }
+
+    retourne valeurs
+}
+
+fonction principal() {
+    soit nombres = tri_insertion([7, 3, 9, 1, 4])
+
+    afficher(nombres.joindre(","))
+    afficher(rechercher_binaire(nombres, 4))
+    afficher(rechercher_binaire(nombres, 8))
+}`,
+          note: "La recherche retourne la position de la valeur, ou `-1` quand la valeur est absente.",
+        },
+        {
+          id: "analyse-texte",
+          title: "Analyse de texte avec dictionnaires",
+          body: [
+            "Un dictionnaire est naturel pour compter. La clé est l’élément compté, et la valeur est le nombre de fois où il apparaît.",
+            "Cet exemple normalise le texte, le découpe en mots, ignore les morceaux vides et met à jour les compteurs dans un dictionnaire typé.",
+          ],
+          code: `fonction compter_mots(texte: Texte) -> Dictionnaire[Texte, Entier] {
+    soit resultat: Dictionnaire[Texte, Entier] = {}
+    soit mots = texte.elaguer().minuscules().separer(" ")
+
+    pour chaque mot dans mots {
+        soit propre = mot.elaguer()
+
+        si (propre == "") {
+            continuer
+        }
+
+        si (resultat.contient(propre)) {
+            resultat[propre] = resultat[propre] + 1
+        } sinon {
+            resultat[propre] = 1
+        }
+    }
+
+    retourne resultat
+}
+
+fonction principal() {
+    soit comptes = compter_mots("lumiere code lumiere test code")
+
+    afficher(comptes["lumiere"])
+    afficher(comptes["code"])
+    afficher(comptes.cles().joindre(","))
+}`,
+          note: "La tokenisation reste volontairement simple. Elle découpe sur les espaces ; la ponctuation peut être gérée avec une étape de nettoyage supplémentaire.",
+        },
+        {
+          id: "plus-court-chemin-graphe",
+          title: "Plus court chemin dans un graphe non pondéré",
+          body: [
+            "La recherche en largeur explore un graphe par vagues. C’est la méthode standard pour trouver un plus court chemin quand chaque arête a le même coût.",
+            "La file garde les sommets à explorer. Le dictionnaire `visites` évite les boucles. Le dictionnaire `precedent` garde la manière dont l’algorithme est arrivé à chaque sommet pour reconstruire le chemin final.",
+          ],
+          code: `fonction plus_court_chemin(
+    graphe: Dictionnaire[Texte, Liste[Texte]],
+    depart: Texte,
+    arrivee: Texte
+) -> Liste[Texte] {
+    soit file: Liste[Texte] = [depart]
+    soit visites: Dictionnaire[Texte, Logique] = {}
+    soit precedent: Dictionnaire[Texte, Texte] = {}
+
+    visites[depart] = vrai
+
+    tant que (non file.vide()) {
+        soit courant = file.retirer_a(0)
+
+        si (courant == arrivee) {
+            arrêter
+        }
+
+        pour chaque voisin dans graphe[courant] {
+            si (non visites.contient(voisin)) {
+                visites[voisin] = vrai
+                precedent[voisin] = courant
+                file.ajouter(voisin)
+            }
+        }
+    }
+
+    si (non visites.contient(arrivee)) {
+        retourne []
+    }
+
+    soit chemin: Liste[Texte] = []
+    soit courant = arrivee
+
+    tant que (courant != depart) {
+        chemin.inserer(0, courant)
+        courant = precedent[courant]
+    }
+
+    chemin.inserer(0, depart)
+    retourne chemin
+}
+
+fonction principal() {
+    soit graphe: Dictionnaire[Texte, Liste[Texte]] = {
+        "A": ["B", "C"],
+        "B": ["A", "D"],
+        "C": ["A", "D", "E"],
+        "D": ["B", "C", "F"],
+        "E": ["C", "F"],
+        "F": ["D", "E"]
+    }
+
+    soit chemin = plus_court_chemin(graphe, "A", "F")
+    afficher(chemin.joindre(" -> "))
+}`,
+        },
+        {
+          id: "ordonnanceur-classes",
+          title: "Ordonnanceur de priorité avec classes",
+          body: [
+            "Les classes sont utiles quand un programme a besoin d’enregistrements nommés. Une tâche n’est pas seulement une entrée de dictionnaire ici ; elle a un titre, une priorité et un comportement avec `decrire`.",
+            "L’ordonnanceur garde la liste triée au moment de l’insertion. Les tâches les plus prioritaires restent au début.",
+          ],
+          code: `classe Tache {
+    titre: Texte
+    priorite: Entier
+
+    fonction decrire() -> Texte {
+        retourne "[" + ici.priorite + "] " + ici.titre
+    }
+}
+
+fonction inserer_tache(file: Liste[Tache], tache: Tache) {
+    soit position = 0
+
+    tant que (position < file.taille()) {
+        si (file[position].priorite < tache.priorite) {
+            arrêter
+        }
+
+        position = position + 1
+    }
+
+    file.inserer(position, tache)
+}
+
+fonction principal() {
+    soit file: Liste[Tache] = []
+
+    inserer_tache(file, Tache(titre: "corriger bug réseau", priorite: 10))
+    inserer_tache(file, Tache(titre: "écrire documentation", priorite: 6))
+    inserer_tache(file, Tache(titre: "nettoyer exemples", priorite: 8))
+
+    pour chaque tache dans file {
+        afficher(tache.decrire())
+    }
+}`,
+          note: "C’est la même idée utilisée dans beaucoup d’ordonnanceurs : insérer ou choisir le travail selon une règle de priorité.",
         },
       ],
     },

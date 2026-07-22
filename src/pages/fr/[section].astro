@@ -10,7 +10,7 @@ import { formatInlineCode } from "../../lib/inline-code";
 import { site } from "../../data/site";
 
 export function getStaticPaths() {
-  return (["learn", "architecture", "journal", "download"] as const).map((section) => ({ params: { section }, props: { section } }));
+  return (["learn", "examples", "architecture", "journal", "download"] as const).map((section) => ({ params: { section }, props: { section } }));
 }
 
 const { section } = Astro.props as { section: Section };

@@ -2,7 +2,7 @@ import type { Locale } from "../data/site";
 
 const copy = {
   en: {
-    nav: { learn: "Learn", architecture: "Architecture", journal: "Journal", download: "Download" },
+    nav: { learn: "Learn", examples: "Examples", architecture: "Architecture", journal: "Journal", download: "Download" },
     hero: { eyebrow: "A programming language in alpha", title: "A language for", accent: "French-first code.", body: "Write programs with French syntax and familiar programming concepts.", primary: "Download v0.1.6", secondary: "Start learning" },
     code: { eyebrow: "Meet the language", title: "Readable by design.", body: "French keywords and familiar structure keep Lumière code close to the intent of the program." },
     pipeline: { eyebrow: "Project notes", title: "Understand how Lumière works.", body: "Architecture notes explain how the language is organized, how code runs, and which parts are still evolving during alpha." },
@@ -10,7 +10,7 @@ const copy = {
     alpha: "Alpha software — libraries, tooling, and some APIs may change between releases.",
   },
   fr: {
-    nav: { learn: "Apprendre", architecture: "Architecture", journal: "Journal", download: "Télécharger" },
+    nav: { learn: "Apprendre", examples: "Exemples", architecture: "Architecture", journal: "Journal", download: "Télécharger" },
     hero: { eyebrow: "Un langage de programmation en alpha", title: "Un langage pour", accent: "coder en français.", body: "Écrivez des programmes avec une syntaxe française et des concepts de programmation familiers.", primary: "Télécharger v0.1.6", secondary: "Commencer" },
     code: { eyebrow: "Découvrez le langage", title: "Lisible par conception.", body: "Des mots-clés français et une structure familière gardent le code Lumière proche de l’intention du programme." },
     pipeline: { eyebrow: "Notes du projet", title: "Comprendre le fonctionnement de Lumière.", body: "Les notes d’architecture expliquent l’organisation du langage, l’exécution du code et les parties encore en évolution pendant l’alpha." },
