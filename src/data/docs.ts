@@ -654,6 +654,127 @@ fonction principal() {
           note: "When control flow is hard to follow, write down the values and trace which branch runs. Do not guess; follow the conditions in order.",
         },
         {
+          id: "errors-and-exceptions",
+          title: "Handle errors without hiding them",
+          body: [
+            "Most beginner programs should prevent bad situations with clear `si` checks. Error handling is for the cases where something can fail while the program is running: a missing file, a bad index, a network failure, or a function that deliberately refuses invalid input.",
+            "`lancer` raises a value as an error. `essayer` runs code that might fail. `attraper` receives matching errors. `finalement` runs cleanup code after the attempt, whether the attempt succeeds or fails.",
+            "A catch is typed. `attraper (e: Entier)` catches thrown integers. `attraper (e: Texte)` catches thrown text and many runtime error messages. `attraper (e: Universel)` is broad, so put it after more specific catches.",
+          ],
+          bullets: [
+            "Use `lancer` when the current function cannot produce a correct answer.",
+            "Use `essayer` around the smallest piece of code that may fail.",
+            "Use `attraper` to recover, explain the problem, or choose a fallback.",
+            "Use `finalement` for code that must run even when the block exits early.",
+          ],
+          code: `fonction diviser(a: Entier, b: Entier) -> Entier {
+    si (b == 0) {
+        lancer "division par zéro"
+    }
+
+    retourne a / b
+}
+
+fonction principal() {
+    essayer {
+        afficher(diviser(10, 0))
+    } attraper (erreur: Texte) {
+        afficher("Calcul impossible")
+        afficher(erreur)
+    } finalement {
+        afficher("fin du calcul")
+    }
+}`,
+          examples: [
+            {
+              title: "Prefer normal checks when the case is expected",
+              body: "If missing data is a normal possibility, check for it directly. This keeps the common path easy to read and avoids using errors as ordinary decisions.",
+              code: `fonction afficher_age(profil: Dictionnaire[Texte, Entier]) {
+    si (profil.contient("age")) {
+        afficher(profil["age"])
+    } sinon {
+        afficher("âge inconnu")
+    }
+}
+
+fonction principal() {
+    afficher_age({"age": 36})
+    afficher_age({})
+}`,
+            },
+            {
+              title: "Catch a runtime error when an operation fails",
+              body: "Some errors happen inside an operation. Here, reading outside a list raises a runtime error. The catch receives the message as `Texte`, so the program can report it cleanly instead of crashing.",
+              code: `fonction principal() {
+    soit valeurs = [10, 20]
+
+    essayer {
+        afficher(valeurs[5])
+    } attraper (erreur: Texte) {
+        afficher("indice invalide")
+        afficher(erreur)
+    }
+}`,
+            },
+            {
+              title: "Catch order matters",
+              body: "Lumière tests catches from top to bottom. Put the specific type first. If `Universel` comes first, it catches everything before the later catch gets a chance.",
+              code: `fonction principal() {
+    essayer {
+        lancer "configuration absente"
+    } attraper (message: Texte) {
+        afficher("texte: " + message)
+    } attraper (valeur: Universel) {
+        afficher("autre erreur")
+    }
+}`,
+            },
+            {
+              title: "Finally runs when a function returns early",
+              body: "`finalement` is not only for thrown errors. It also runs when `retourne` leaves the attempted block. That makes it useful for final messages or cleanup steps that must happen on every path.",
+              code: `fonction lire_score() -> Entier {
+    essayer {
+        retourne 10
+    } attraper (erreur: Texte) {
+        retourne 0
+    } finalement {
+        afficher("lecture terminée")
+    }
+}
+
+fonction principal() {
+    afficher(lire_score())
+}`,
+            },
+            {
+              title: "Test that a function rejects invalid input",
+              body: "When a function deliberately uses `lancer`, test it with `essayer` and `attraper`, then assert the captured value. Put this in a file such as `validation_test.lum`; the test runner discovers files ending in `_test.lum`.",
+              code: `importer LumiTest
+
+fonction exiger_positif(nombre: Entier) -> Entier {
+    si (nombre < 0) {
+        lancer "nombre négatif interdit"
+    }
+
+    retourne nombre
+}
+
+LumiTest.test("refuse un nombre négatif", fonction() {
+    soit message = ""
+
+    essayer {
+        exiger_positif(-1)
+    } attraper (erreur: Texte) {
+        message = erreur
+    }
+
+    LumiTest.vérifier_égal("nombre négatif interdit", message)
+})`,
+            },
+          ],
+          note: "Do not catch an error just to ignore it. Either fix the situation, choose an explicit fallback, or show a useful message. Silent failures make programs harder to trust.",
+        },
+        {
           id: "expression-reference",
           title: "Expression and operator reference",
           body: [
@@ -961,20 +1082,13 @@ LumiTest.groupe("Salutations", fonction() {
             },
             {
               title: "Check that an error is intentional",
-              body: "Some functions are supposed to reject bad input. `vérifier_lance` checks that the code inside the anonymous function raises an error.",
+              body: "Some operations are expected to fail when they receive invalid input. `vérifier_lance` is useful for runtime errors such as reading outside a list.",
               code: `importer LumiTest
 
-fonction diviser(a: Entier, b: Entier) -> Entier {
-    si (b == 0) {
-        lancer "division par zéro"
-    }
-
-    retourne a / b
-}
-
-LumiTest.test("refuse la division par zéro", fonction() {
+LumiTest.test("refuse un mauvais indice", fonction() {
     LumiTest.vérifier_lance(fonction() {
-        diviser(10, 0)
+        soit valeurs = [10, 20]
+        afficher(valeurs[5])
     })
 })`,
             },
@@ -3735,6 +3849,127 @@ fonction principal() {
           note: "Quand le contrôle de flux devient difficile à suivre, écrivez les valeurs et tracez la branche qui s’exécute. Ne devinez pas ; suivez les conditions dans l’ordre.",
         },
         {
+          id: "erreurs-et-exceptions",
+          title: "Gérer les erreurs sans les cacher",
+          body: [
+            "La plupart des programmes débutants doivent éviter les mauvais cas avec des `si` clairs. La gestion d’erreurs sert aux cas où une opération peut échouer pendant l’exécution : fichier absent, mauvais indice, échec réseau ou fonction qui refuse volontairement une entrée invalide.",
+            "`lancer` signale une valeur comme erreur. `essayer` exécute du code qui peut échouer. `attraper` reçoit les erreurs compatibles. `finalement` exécute du code après l’essai, que l’essai réussisse ou échoue.",
+            "Un `attraper` est typé. `attraper (e: Entier)` attrape les entiers lancés. `attraper (e: Texte)` attrape le texte lancé et beaucoup de messages d’erreur runtime. `attraper (e: Universel)` est large, donc placez-le après les cas plus précis.",
+          ],
+          bullets: [
+            "Utilisez `lancer` quand la fonction courante ne peut pas produire une réponse correcte.",
+            "Utilisez `essayer` autour de la plus petite portion de code qui peut échouer.",
+            "Utilisez `attraper` pour récupérer, expliquer le problème ou choisir une valeur de repli.",
+            "Utilisez `finalement` pour du code qui doit s’exécuter même quand le bloc sort plus tôt.",
+          ],
+          code: `fonction diviser(a: Entier, b: Entier) -> Entier {
+    si (b == 0) {
+        lancer "division par zéro"
+    }
+
+    retourne a / b
+}
+
+fonction principal() {
+    essayer {
+        afficher(diviser(10, 0))
+    } attraper (erreur: Texte) {
+        afficher("Calcul impossible")
+        afficher(erreur)
+    } finalement {
+        afficher("fin du calcul")
+    }
+}`,
+          examples: [
+            {
+              title: "Préférer un test normal quand le cas est prévu",
+              body: "Si une donnée absente est une possibilité normale, vérifiez-la directement. Le chemin habituel reste lisible et les erreurs ne remplacent pas les décisions ordinaires.",
+              code: `fonction afficher_age(profil: Dictionnaire[Texte, Entier]) {
+    si (profil.contient("age")) {
+        afficher(profil["age"])
+    } sinon {
+        afficher("âge inconnu")
+    }
+}
+
+fonction principal() {
+    afficher_age({"age": 36})
+    afficher_age({})
+}`,
+            },
+            {
+              title: "Attraper une erreur runtime quand une opération échoue",
+              body: "Certaines erreurs viennent de l’opération elle-même. Ici, lire en dehors d’une liste déclenche une erreur runtime. Le `attraper` reçoit le message comme `Texte`, donc le programme peut l’expliquer au lieu de s’arrêter brutalement.",
+              code: `fonction principal() {
+    soit valeurs = [10, 20]
+
+    essayer {
+        afficher(valeurs[5])
+    } attraper (erreur: Texte) {
+        afficher("indice invalide")
+        afficher(erreur)
+    }
+}`,
+            },
+            {
+              title: "L’ordre des attraper compte",
+              body: "Lumière teste les blocs `attraper` de haut en bas. Placez le type précis en premier. Si `Universel` arrive d’abord, il attrape tout avant que le cas suivant puisse s’exécuter.",
+              code: `fonction principal() {
+    essayer {
+        lancer "configuration absente"
+    } attraper (message: Texte) {
+        afficher("texte: " + message)
+    } attraper (valeur: Universel) {
+        afficher("autre erreur")
+    }
+}`,
+            },
+            {
+              title: "Finalement s’exécute quand une fonction retourne tôt",
+              body: "`finalement` ne sert pas seulement aux erreurs lancées. Il s’exécute aussi quand `retourne` quitte le bloc essayé. C’est utile pour un message final ou une étape de nettoyage qui doit arriver sur tous les chemins.",
+              code: `fonction lire_score() -> Entier {
+    essayer {
+        retourne 10
+    } attraper (erreur: Texte) {
+        retourne 0
+    } finalement {
+        afficher("lecture terminée")
+    }
+}
+
+fonction principal() {
+    afficher(lire_score())
+}`,
+            },
+            {
+              title: "Tester qu’une fonction refuse une entrée invalide",
+              body: "Quand une fonction utilise volontairement `lancer`, testez-la avec `essayer` et `attraper`, puis vérifiez la valeur capturée. Placez-le dans un fichier comme `validation_test.lum` ; le lanceur de tests découvre les fichiers qui se terminent par `_test.lum`.",
+              code: `importer LumiTest
+
+fonction exiger_positif(nombre: Entier) -> Entier {
+    si (nombre < 0) {
+        lancer "nombre négatif interdit"
+    }
+
+    retourne nombre
+}
+
+LumiTest.test("refuse un nombre négatif", fonction() {
+    soit message = ""
+
+    essayer {
+        exiger_positif(-1)
+    } attraper (erreur: Texte) {
+        message = erreur
+    }
+
+    LumiTest.vérifier_égal("nombre négatif interdit", message)
+})`,
+            },
+          ],
+          note: "N’attrapez pas une erreur pour l’ignorer. Corrigez la situation, choisissez une valeur de repli explicite ou affichez un message utile. Les échecs silencieux rendent un programme difficile à croire.",
+        },
+        {
           id: "reference-expressions",
           title: "Référence des expressions et opérateurs",
           body: [
@@ -4042,20 +4277,13 @@ LumiTest.groupe("Salutations", fonction() {
             },
             {
               title: "Vérifier qu’une erreur est volontaire",
-              body: "Certaines fonctions doivent refuser les mauvaises entrées. `vérifier_lance` vérifie que le code dans la fonction anonyme lance une erreur.",
+              body: "Certaines opérations doivent échouer quand elles reçoivent une entrée invalide. `vérifier_lance` est utile pour les erreurs runtime, par exemple lire en dehors d’une liste.",
               code: `importer LumiTest
 
-fonction diviser(a: Entier, b: Entier) -> Entier {
-    si (b == 0) {
-        lancer "division par zéro"
-    }
-
-    retourne a / b
-}
-
-LumiTest.test("refuse la division par zéro", fonction() {
+LumiTest.test("refuse un mauvais indice", fonction() {
     LumiTest.vérifier_lance(fonction() {
-        diviser(10, 0)
+        soit valeurs = [10, 20]
+        afficher(valeurs[5])
     })
 })`,
             },
